@@ -4,6 +4,7 @@ import jdk.jfr.Description;
 import jdk.jfr.Name;
 
 import java.lang.annotation.Target;
+import java.util.Arrays;
 
 public class Preferences {
 
@@ -18,9 +19,12 @@ public class Preferences {
     public static final String SPEED = "Speed";
     public static final String MAX_FOOD = "MaxFood";
 
-    public final static String HERBIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.herbivores";
-    public final static String OMNIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.omnivores";
-    public final static String PREDATORS_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.predators";
+
+    private static final String HERBIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.herbivores";
+    private static final String OMNIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.omnivores";
+    private static final String PREDATORS_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.predators";
+
+    public static final String[] ANIMAL_PACKAGES = new String[] {HERBIVORES_PACKAGE, OMNIVORES_PACKAGE, PREDATORS_PACKAGE};
 
     /** Enums for EntityFactory*/
     public enum AnimalEnum {
@@ -48,8 +52,8 @@ public class Preferences {
     /**
      * Island size
      */
-    public static final int gameFieldWidth = 100;
-    public static final int gameFieldHeight = 20;
+    public static final int gameFieldWidth = 50;
+    public static final int gameFieldHeight = 10;
 
     /** Plants */
     public static final float plantWeight = 1;

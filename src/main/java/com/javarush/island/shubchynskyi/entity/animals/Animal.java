@@ -4,12 +4,15 @@ import com.javarush.island.shubchynskyi.exception.IslandException;
 import com.javarush.island.shubchynskyi.preferences.Preferences;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.shubchynskyi.preferences.Preferences.*;
 
 public abstract class Animal implements Cloneable {
 
-    private final String name;
+    private final AtomicInteger animalCount = new AtomicInteger(0);
+
+    private String name;
     private final double weight;
     private final int maxPerCell;
     private final int speed;
@@ -66,7 +69,9 @@ public abstract class Animal implements Cloneable {
     @Override
     public Animal clone() {
         try {
-            return (Animal) super.clone();
+            Animal result = (Animal) super.clone();
+            result.name = result.name + " " + animalCount.incrementAndGet();
+            return result;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

@@ -7,7 +7,7 @@ public class Generator {
     private Generator() {
     }
 
-    public static int get(int min, int max) {
+    public static int getRandom(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min,max);
     }
 }

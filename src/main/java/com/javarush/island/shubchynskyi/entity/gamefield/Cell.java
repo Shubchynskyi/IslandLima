@@ -2,29 +2,30 @@ package com.javarush.island.shubchynskyi.entity.gamefield;
 
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Cell {
-    int x;
-    int y;
 
-    public Cell(int x, int y) {
-        this.x = x;
-        this.y = y;
+
+    // TODO соседние валидные ячейки
+    List<Cell> neighbours = new ArrayList<>();
+
+    public void addNeighbour (Cell cell) {
+        neighbours.add(cell);
     }
 
-    @Override
-    public String toString() {
-        return "Cell{" +
-                "x=" + x +
-                ", y=" + y +
-                ", animalsInCell=" + animalsInCell +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        List<String> collect = animalsInCell.stream().map(Animal::getName).toList();
+//        return "Cell " + ", animalsInCell=" + collect;
+//    }
 
-    public Map<Class<? extends Animal>, Set<Animal>> animalsInCell = new HashMap<>();
+    // TODO заполнить рандомно при создании ячейки
+    public Set<Animal> animalsInCell = new HashSet<>();
+
 
     //все животные должны поесть, подвигаться, по размножаться
     // как вариант координаты будут храниться в обьектах, в каждом обьекте или списке обьектов одного класса
