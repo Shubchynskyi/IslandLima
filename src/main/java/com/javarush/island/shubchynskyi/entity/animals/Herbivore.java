@@ -1,10 +1,11 @@
 package com.javarush.island.shubchynskyi.entity.animals;
 
-import com.javarush.island.shubchynskyi.entity.plants.Plants;
+import com.javarush.island.shubchynskyi.entity.plants.Plant;
+
 
 public interface Herbivore {
 
-    default void eat(Plants plant) {
+    default void eat(Plant plant) {
 
     }
 

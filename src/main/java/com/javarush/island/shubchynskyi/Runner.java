@@ -1,17 +1,17 @@
 package com.javarush.island.shubchynskyi;
 
-import com.javarush.island.shubchynskyi.entity.animals.EntityFactory;
-import com.javarush.island.shubchynskyi.entity.gamefield.Gamefield;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
-
+import com.javarush.island.shubchynskyi.entity.EntityFactory;
+import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
+import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 
 
 public class Runner {
     public static void main(String[] args) {
-        Gamefield gamefield = new Gamefield(new EntityFactory());
+        GameField gamefield = new GameField(new EntityFactory());
+
+        Cell cell = gamefield.field[1][1];
+
+        System.out.println(cell.getNeighbours().size());
 
 
 //        for (Animal prototype : entityFactory.prototypes) {

@@ -14,6 +14,7 @@ public class IslandException extends RuntimeException {
 
     public IslandException(Throwable cause) {
         // TODO logic
-        super(cause);
+//        super(cause);
+        System.out.println("Error" + cause);
     }
 }

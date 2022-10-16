@@ -5,4 +5,5 @@ import com.javarush.island.shubchynskyi.entity.animals.Predator;
 
 public class Fox extends Animal implements Predator {
 
+
 }

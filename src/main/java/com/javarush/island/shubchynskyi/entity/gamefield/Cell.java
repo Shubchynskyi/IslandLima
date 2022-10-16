@@ -1,38 +1,35 @@
 package com.javarush.island.shubchynskyi.entity.gamefield;
 
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
+import com.javarush.island.shubchynskyi.entity.plants.Plant;
+import com.javarush.island.shubchynskyi.preferences.AnimalPref;
+import com.javarush.island.shubchynskyi.preferences.PlantPref;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Cell {
 
+    private final List<Cell> neighbours = new ArrayList<>();
 
-    // TODO соседние валидные ячейки
-    List<Cell> neighbours = new ArrayList<>();
+    public Map<AnimalPref.AnimalEnums, Set<Animal>> animalsInCell = new ConcurrentHashMap<>();
+    public Map<PlantPref.PlantEnums, Set<Plant>> plantsInCell = new ConcurrentHashMap<>();
+
+
+    public List<Cell> getNeighbours() {
+        return neighbours;
+    }
 
     public void addNeighbour (Cell cell) {
         neighbours.add(cell);
     }
 
-//    @Override
-//    public String toString() {
-//        List<String> collect = animalsInCell.stream().map(Animal::getName).toList();
-//        return "Cell " + ", animalsInCell=" + collect;
-//    }
+    //TODO remove when finish
 
-    // TODO заполнить рандомно при создании ячейки
-    public Set<Animal> animalsInCell = new HashSet<>();
-
-
-    //все животные должны поесть, подвигаться, по размножаться
-    // как вариант координаты будут храниться в обьектах, в каждом обьекте или списке обьектов одного класса
-    //
-    public void makeStep() {
-
+    @Override
+    public String toString() {
+        return "Cell{" +
+                ", animalsInCell=" + animalsInCell.entrySet() +
+                '}';
     }
-
-
 }
