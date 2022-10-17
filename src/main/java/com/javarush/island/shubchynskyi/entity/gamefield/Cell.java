@@ -35,9 +35,22 @@ public class Cell {
 
     @Override
     public String toString() {
-        return "Cell{" +
-                ", animalsInCell=" + animalsInCell.entrySet() +
-                '}';
+        List<String> plantsStatistic = new ArrayList<>();
+        for (var var : plantsInCell.entrySet()) {
+            plantsStatistic.add(var.getKey().toString() + " : " + var.getValue().size());
+        }
+        List<String> animalsStatistic = new ArrayList<>();
+        for (var var : animalsInCell.entrySet()) {
+            animalsStatistic.add(var.getKey().toString() + " : " + var.getValue().size());
+        }
+
+        int i = 10;
+        return "Cell [" + x + "/" + y + "] info: \n" +
+                "\t" + "cell neighbours is " + getNeighbours().size() + "\n" +
+                "\t" + "plants in cell: " +
+                plantsStatistic + "\n" +
+                "\t" + "animals in cell: " +
+                animalsStatistic;
     }
 
     @Override

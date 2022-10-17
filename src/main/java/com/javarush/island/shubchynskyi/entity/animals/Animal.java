@@ -89,6 +89,8 @@ public abstract class Animal implements Cloneable {
         return maxFood;
     }
 
+
+    // TODO убрать лишнее
     public void move() {
         int stepCount = Generator.getRandom(0, getSpeed() + 1);
         if (stepCount == 0) return;
@@ -96,7 +98,6 @@ public abstract class Animal implements Cloneable {
         // удалиться из списка текущей ячейки
         getCurrentCell().animalsInCell.get(getType()).remove(this);
 
-        // TODO проверка соседа на максимальное количесво
         //делаю шаги
         for (int i = 0; i < stepCount; i++) {
 
@@ -104,9 +105,9 @@ public abstract class Animal implements Cloneable {
             int count = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
 
             // проверка на максимум животных
-            int maxAminalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getType()).size();
+            int maxAnimalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getType()).size();
 
-            if (getMaxPerCell() < maxAminalInCell) {
+            if (getMaxPerCell() < maxAnimalInCell) {
                 // новая ячейка стала текущей, если позволяет место
                 setCurrentCell(getCurrentCell().getNeighbours().get(count));
             }
@@ -114,14 +115,25 @@ public abstract class Animal implements Cloneable {
             //если места нет, ход пропущен
         }
         // добавляюсь в список конечной ячейки
-        if(getCurrentCell().animalsInCell.containsKey(getType())) {
+        if (getCurrentCell().animalsInCell.containsKey(getType())) {
             getCurrentCell().animalsInCell.get(getType()).add(this);
         } else {
             Set<Animal> newSet = new HashSet<>();
             newSet.add(this);
-            getCurrentCell().animalsInCell.put(getType(),newSet);
+            getCurrentCell().animalsInCell.put(getType(), newSet);
         }
     }
+
+    public void reproduction() {
+        // генерируем число
+        // если false - выход
+        // иначе от 1 до 6 детенышей - или ввести максимум для каждого класса
+        // полученное значение проверить с максимумом в ячейке и создать не более максимума (метод getAnimal в entityFactory)
+        //
+    }
+
+
+
 
     @Override
     public boolean equals(Object o) {

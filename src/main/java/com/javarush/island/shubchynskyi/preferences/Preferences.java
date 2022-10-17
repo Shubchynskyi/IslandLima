@@ -23,6 +23,11 @@ public class Preferences {
     public static final String MAX_FOOD = "MaxFood";
 
     /** Avatars */
+
+//    public static String getAvatar(Enum<?> tEnum) {
+//
+//    }
+
     public final static String GRASS_AVATAR = "\uD83C\uDF3F";
     public final static String TREE_AVATAR = "\ud83c\udf32";
 

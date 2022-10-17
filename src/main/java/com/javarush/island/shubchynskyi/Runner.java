@@ -8,6 +8,7 @@ import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 public class Runner {
     public static void main(String[] args) {
         GameField gamefield = new GameField(new EntityFactory());
+        gamefield.printState();
 
 //        Cell cell = gamefield.field[1][1];
 //
