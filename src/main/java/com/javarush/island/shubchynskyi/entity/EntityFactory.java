@@ -5,13 +5,8 @@ import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.preferences.AnimalPref;
 import com.javarush.island.shubchynskyi.preferences.PlantPref;
-import com.javarush.island.shubchynskyi.preferences.Preferences;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 
@@ -19,10 +14,11 @@ public class EntityFactory {
 
 
 
-    public Cell getFilledCell() {
-        Cell resultCell = new Cell();
+    public Cell getFilledCell(int x, int y) {
+        Cell resultCell = new Cell(x, y);
         for (Animal prototype : AnimalPref.prototypes) {
             int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
+            prototype.setCurrentCell(resultCell);
             for (int i = 0; i <= randomInt; i++) {
                 if (resultCell.animalsInCell.containsKey(prototype.getType())) {
                     resultCell.animalsInCell.get(prototype.getType()).add(prototype.clone());

@@ -21,7 +21,7 @@ public class GameField {
     private void initialize() {
         for (int x = 0; x < Preferences.gameFieldWidth; x++) {
             for (int y = 0; y < Preferences.gameFieldHeight; y++) {
-                field[x][y] = entityFactory.getFilledCell();
+                field[x][y] = entityFactory.getFilledCell(x, y);
             }
         }
         for (int x = 0; x < Preferences.gameFieldWidth; x++) {
@@ -48,7 +48,7 @@ public class GameField {
 
         for (int y = 0; y < Preferences.gameFieldHeight; y++) {
             for (int x = 0; x < Preferences.gameFieldWidth; x++) {
-                System.out.print("*");
+                
                 if (x == Preferences.gameFieldWidth - 1) {
                     System.out.println();
                 }

@@ -9,9 +9,15 @@ public class Runner {
     public static void main(String[] args) {
         GameField gamefield = new GameField(new EntityFactory());
 
-        Cell cell = gamefield.field[1][1];
+//        Cell cell = gamefield.field[1][1];
+//
+//
+//
+//        for (var var :  cell.plantsInCell.entrySet()) {
+//            System.out.println(var.getValue());
+//        }
 
-        System.out.println(cell.getNeighbours().size());
+
 
 
 //        for (Animal prototype : entityFactory.prototypes) {

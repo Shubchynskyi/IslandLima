@@ -1,14 +1,16 @@
 package com.javarush.island.shubchynskyi.entity.animals;
 
+import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.exception.IslandException;
 import com.javarush.island.shubchynskyi.preferences.AnimalPref;
+import com.javarush.island.shubchynskyi.utils.Generator;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.javarush.island.shubchynskyi.preferences.AnimalPref.*;
+import static com.javarush.island.shubchynskyi.preferences.AnimalPref.AnimalEnums;
 import static com.javarush.island.shubchynskyi.preferences.Preferences.*;
 
 
@@ -19,6 +21,15 @@ public abstract class Animal implements Cloneable {
     //TODO вынести в конкретный класс для создания списка одного типа
 //    private Set<Animal> oneTypeAnimals = new HashSet<>();
 
+    public Cell getCurrentCell() {
+        return currentCell;
+    }
+
+    public void setCurrentCell(Cell currentCell) {
+        this.currentCell = currentCell;
+    }
+
+    private Cell currentCell;
     private String name;
     private final AnimalEnums type;
     private final double weight;
@@ -76,6 +87,40 @@ public abstract class Animal implements Cloneable {
 
     public double getMaxFood() {
         return maxFood;
+    }
+
+    public void move() {
+        int stepCount = Generator.getRandom(0, getSpeed() + 1);
+        if (stepCount == 0) return;
+
+        // удалиться из списка текущей ячейки
+        getCurrentCell().animalsInCell.get(getType()).remove(this);
+
+        // TODO проверка соседа на максимальное количесво
+        //делаю шаги
+        for (int i = 0; i < stepCount; i++) {
+
+            //беру рандомную соседскую доступную ячейку
+            int count = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
+
+            // проверка на максимум животных
+            int maxAminalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getType()).size();
+
+            if (getMaxPerCell() < maxAminalInCell) {
+                // новая ячейка стала текущей, если позволяет место
+                setCurrentCell(getCurrentCell().getNeighbours().get(count));
+            }
+
+            //если места нет, ход пропущен
+        }
+        // добавляюсь в список конечной ячейки
+        if(getCurrentCell().animalsInCell.containsKey(getType())) {
+            getCurrentCell().animalsInCell.get(getType()).add(this);
+        } else {
+            Set<Animal> newSet = new HashSet<>();
+            newSet.add(this);
+            getCurrentCell().animalsInCell.put(getType(),newSet);
+        }
     }
 
     @Override
