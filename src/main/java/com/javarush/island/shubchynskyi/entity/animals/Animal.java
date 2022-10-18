@@ -36,6 +36,7 @@ public abstract class Animal implements Cloneable {
     private final int maxPerCell;
     private final int speed;
     private double maxFood;
+    private final String avatar;
     private boolean isAlive = true;
 
     public Animal() {
@@ -46,6 +47,7 @@ public abstract class Animal implements Cloneable {
             this.maxPerCell = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + MAX_PER_CELL).getInt(AnimalPref.class);
             this.speed = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + SPEED).getInt(AnimalPref.class);
             this.maxFood = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + MAX_FOOD).getDouble(AnimalPref.class);
+            this.avatar = (String) AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + AVATAR).get(AnimalPref.class);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new IslandException(e);
         }
@@ -157,5 +159,9 @@ public abstract class Animal implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public String getAvatar() {
+        return avatar;
     }
 }

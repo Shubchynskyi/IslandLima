@@ -32,7 +32,6 @@ public class Cell {
     }
 
     //TODO remove when finish
-
     @Override
     public String toString() {
         List<String> plantsStatistic = new ArrayList<>();
@@ -52,6 +51,7 @@ public class Cell {
                 "\t" + "animals in cell: " +
                 animalsStatistic;
     }
+
 
     @Override
     public boolean equals(Object o) {

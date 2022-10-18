@@ -32,6 +32,8 @@ public class AnimalPref {
     public static final int predatorsTryingToEat = 3;
 
 
+
+
     /** Wolf */
     public static final String wolfName = "Wolf";
     public static final AnimalEnums wolfType = AnimalEnums.WOLF;
@@ -39,6 +41,7 @@ public class AnimalPref {
     public static final int wolfMaxPerCell = 30;
     public static final int wolfSpeed = 3;
     public static final double wolfMaxFood = 8;
+    public final static String wolfAvatar = "\uD83D\uDC3A";
 
     /** Boa */
     public static final String boaName = "Boa";
@@ -47,6 +50,7 @@ public class AnimalPref {
     public static final int boaMaxPerCell = 30;
     public static final int boaSpeed = 1;
     public static final double boaMaxFood = 3;
+    public final static String boaAvatar = "\uD83D\uDC0D";
 
     /** Fox */
     public static final String foxName = "Fox";
@@ -55,6 +59,7 @@ public class AnimalPref {
     public static final int foxMaxPerCell = 30;
     public static final int foxSpeed = 2;
     public static final double foxMaxFood = 2;
+    public final static String foxAvatar = "\uD83E\uDD8A";
 
     /** Bear */
     public static final String bearName = "Bear";
@@ -63,6 +68,7 @@ public class AnimalPref {
     public static final int bearMaxPerCell = 5;
     public static final int bearSpeed = 2;
     public static final double bearMaxFood = 80;
+    public final static String bearAvatar = "\uD83D\uDC3B";
 
     /** Eagle */
     public static final String eagleName = "Eagle";
@@ -71,6 +77,7 @@ public class AnimalPref {
     public static final int eagleMaxPerCell = 20;
     public static final int eagleSpeed = 3;
     public static final double eagleMaxFood = 1;
+    public final static String eagleAvatar = "\uD83E\uDD85";
 
     /** Horse */
     public static final String horseName = "Horse";
@@ -79,6 +86,7 @@ public class AnimalPref {
     public static final int horseMaxPerCell = 20;
     public static final int horseSpeed = 4;
     public static final double horseMaxFood = 60;
+    public final static String horseAvatar = "\uD83D\uDC0E";
 
     /** Rabbit */
     public static final String rabbitName = "Rabbit";
@@ -87,6 +95,7 @@ public class AnimalPref {
     public static final int rabbitMaxPerCell = 150;
     public static final int rabbitSpeed = 2;
     public static final double rabbitMaxFood = 0.45d;
+    public final static String rabbitAvatar = "\uD83D\uDC07";
 
     /** Mouse */
     public static final String mouseName = "Mouse";
@@ -95,6 +104,7 @@ public class AnimalPref {
     public static final int mouseMaxPerCell = 500;
     public static final int mouseSpeed = 1;
     public static final double mouseMaxFood = 0.01d;
+    public final static String mouseAvatar = "\uD83D\uDC01";
 
     /** Goat */
     public static final String goatName = "Goat";
@@ -103,6 +113,7 @@ public class AnimalPref {
     public static final int goatMaxPerCell = 140;
     public static final int goatSpeed = 3;
     public static final double goatMaxFood = 10;
+    public final static String goatAvatar = "\uD83D\uDC10";
 
     /** Sheep */
     public static final String sheepName = "Sheep";
@@ -111,6 +122,7 @@ public class AnimalPref {
     public static final int sheepMaxPerCell = 140;
     public static final int sheepSpeed = 3;
     public static final double sheepMaxFood = 15;
+    public final static String sheepAvatar = "\uD83D\uDC11";
 
     /** Boar */
     public static final String boarName = "Boar";
@@ -119,6 +131,7 @@ public class AnimalPref {
     public static final int boarMaxPerCell = 50;
     public static final int boarSpeed = 2;
     public static final double boarMaxFood = 50;
+    public final static String boarAvatar = "\uD83D\uDC17";
 
     /** Buffalo */
     public static final String buffaloName = "Buffalo";
@@ -127,6 +140,7 @@ public class AnimalPref {
     public static final int buffaloMaxPerCell = 10;
     public static final int buffaloSpeed = 3;
     public static final double buffaloMaxFood = 100;
+    public final static String buffaloAvatar = "\uD83D\uDC03";
 
     /** Duck */
     public static final String duckName = "Duck";
@@ -135,6 +149,7 @@ public class AnimalPref {
     public static final int duckMaxPerCell = 200;
     public static final int duckSpeed = 4;
     public static final double duckMaxFood = 0.15d;
+    public final static String duckAvatar = "\uD83E\uDD86";
 
     /** Caterpillar */
     public static final String caterpillarName = "Caterpillar";
@@ -143,6 +158,7 @@ public class AnimalPref {
     public static final int caterpillarMaxPerCell = 1000;
     public static final int caterpillarSpeed = 0;
     public static final double caterpillarMaxFood = 0;
+    public final static String caterpillarAvatar = "\uD83D\uDC1B";
 
     /** Deer */
     public static final String deerName = "Deer";
@@ -151,6 +167,7 @@ public class AnimalPref {
     public static final int deerMaxPerCell = 20;
     public static final int deerSpeed = 0;
     public static final double deerMaxFood = 0;
+    public final static String deerAvatar = "\uD83E\uDD8C";
 
 
 
