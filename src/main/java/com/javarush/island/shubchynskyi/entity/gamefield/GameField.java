@@ -8,6 +8,7 @@ import com.javarush.island.shubchynskyi.settings.GameSettings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 public class GameField {
@@ -17,7 +18,6 @@ public class GameField {
 
     public GameField(EntityFactory entityFactory) {
         this.entityFactory = entityFactory;
-        statisticMapInit();
         initialize();
         print();
     }
@@ -40,29 +40,27 @@ public class GameField {
     // добавить в мапу ВСЕХ по аватару, потом вынести в стрингбилдер
 
     public String getStatistic() {
-
         StringBuilder result = new StringBuilder();
+
+        statisticMapInit();
+
+        int oldValue;
+        int newValue;
+        String type;
 
         for (Cell[] cells : gameField) {
             for (Cell cell : cells) {
-
                 for (var var : cell.animalsInCell.entrySet()) {
-
-//                    statisticMap.
-
-                    int newValue = statisticMap.get(var.getKey()) + var.getValue().size();
-                    statisticMap.put(var.getKey(),newValue);
-                }
-
-                for (var var : cell.plantsInCell.entrySet()) {
-                    int newValue = statisticMap.get(var.getKey()) + var.getValue().size();
-                    statisticMap.put(var.getKey(),newValue);
-                }
-
-                for (var var : statisticMap.entrySet()) {
-                    result.append(var.getKey()).append(" = ").append(var.getValue()).append("; ");
+                    type = var.getKey(); // получил ключ
+                    newValue = var.getValue().size(); // размер сета по ключу map
+                    oldValue = statisticMap.get(type);
+                    statisticMap.put(type, oldValue + newValue);
                 }
             }
+        }
+
+        for (var var : statisticMap.entrySet()) {
+            result.append(var.getKey()).append(" = ").append(var.getValue()).append("; ");
         }
 
         return result.toString();
@@ -116,14 +114,24 @@ public class GameField {
     //делаем шаг
     public void makeStep() {
 
+        for (Cell[] cells : gameField) {
+            for (Cell cell : cells) {
+                for (var var : cell.animalsInCell.entrySet()) {
+                    for (Animal animal : var.getValue()) {
+                        animal.move();
+                    }
+                }
+            }
+        }
+
     }
 
     //вывод статистики
     public void printState() {
 
-        System.out.println(getStatistic());
+        System.out.println(gameField[1][1]);
 
-        //статистика по каждой ячейке
+//        статистика по каждой ячейке
 //        for (int y = 0; y < height; y++) {
 //            for (int x = 0; x < width; x++) {
 //

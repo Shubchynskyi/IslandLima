@@ -7,6 +7,7 @@ import com.javarush.island.shubchynskyi.utils.Generator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
@@ -89,35 +90,29 @@ public abstract class Animal implements Cloneable {
 
     // TODO убрать лишнее
     public void move() {
+
         int stepCount = Generator.getRandom(0, getSpeed() + 1);
         if (stepCount == 0) return;
 
-        // удалиться из списка текущей ячейки
-        getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
-
         //делаю шаги
         for (int i = 0; i < stepCount; i++) {
+            // удалиться из списка текущей ячейки
+            getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
 
             //беру рандомную соседскую доступную ячейку
             int count = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
+//            System.out.println("Хочу шагать в ячейку " + getCurrentCell().getNeighbours().get(count).toString());
 
             // проверка на максимум животных
             int maxAnimalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getAvatar()).size();
+//            System.out.printf("В целевой ячейке %d животных. Доступный максимум - %d%n", maxAnimalInCell, getMaxPerCell());
 
-            if (getMaxPerCell() < maxAnimalInCell) {
+            if (getMaxPerCell() > maxAnimalInCell) {
                 // новая ячейка стала текущей, если позволяет место
                 setCurrentCell(getCurrentCell().getNeighbours().get(count));
+                getCurrentCell().animalsInCell.get(getAvatar()).add(this);
             }
-
             //если места нет, ход пропущен
-        }
-        // добавляюсь в список конечной ячейки
-        if (getCurrentCell().animalsInCell.containsKey(getAvatar())) {
-            getCurrentCell().animalsInCell.get(getAvatar()).add(this);
-        } else {
-            Set<Animal> newSet = new HashSet<>();
-            newSet.add(this);
-            getCurrentCell().animalsInCell.put(getAvatar(), newSet);
         }
     }
 
@@ -148,7 +143,6 @@ public abstract class Animal implements Cloneable {
         try {
             Animal result = (Animal) super.clone();
             result.name = result.name + " " + animalCount.incrementAndGet();
-//            result.setCurrentCell(cell);
             return result;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

@@ -165,10 +165,10 @@ public class EntitySettings {
     /** Deer */
     public static final String deerName = "Deer";
     public static final EntityEnums deerType = EntityEnums.DEER;
-    public static final double deerWeight = 0.01d;
+    public static final double deerWeight = 300;
     public static final int deerMaxPerCell = 20;
-    public static final int deerSpeed = 0;
-    public static final double deerMaxFood = 0;
+    public static final int deerSpeed = 4;
+    public static final double deerMaxFood = 50;
     public static final String deerAvatar = "\uD83E\uDD8C";
 
 

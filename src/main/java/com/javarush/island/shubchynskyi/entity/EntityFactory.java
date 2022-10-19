@@ -7,6 +7,8 @@ import com.javarush.island.shubchynskyi.settings.EntitySettings;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 
 public class EntityFactory {
@@ -17,7 +19,7 @@ public class EntityFactory {
         Cell resultCell = new Cell(x, y);
 
         for (Animal prototype : EntitySettings.animalPrototypes) {
-            resultCell.animalsInCell.put(prototype.getAvatar(),new HashSet<>());
+            resultCell.animalsInCell.put(prototype.getAvatar(),new CopyOnWriteArraySet<>());
             int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
             for (int i = 0; i <= randomInt; i++) {
                 resultCell.animalsInCell.get(prototype.getAvatar()).add(prototype.clone(resultCell));
@@ -25,7 +27,7 @@ public class EntityFactory {
         }
 
         for (Plant prototype : EntitySettings.plantPrototypes) {
-            resultCell.plantsInCell.put(prototype.getAvatar(), new HashSet<>());
+            resultCell.plantsInCell.put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
             int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
             for (int i = 0; i <= randomInt; i++) {
                 resultCell.plantsInCell.get(prototype.getAvatar()).add(prototype.clone());

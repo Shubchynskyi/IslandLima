@@ -43,7 +43,7 @@ public class Cell {
         }
 
         int i = 10;
-        return "Cell [" + x + "/" + y + "] info: \n" +
+        return "Cell [" + x + "/" + y + "] //info: \n" +
                 "\t" + "cell neighbours is " + getNeighbours().size() + "\n" +
                 "\t" + "plants in cell: " +
                 plantsStatistic + "\n" +
