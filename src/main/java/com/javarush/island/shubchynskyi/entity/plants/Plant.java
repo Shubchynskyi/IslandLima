@@ -1,18 +1,12 @@
 package com.javarush.island.shubchynskyi.entity.plants;
 
-import com.javarush.island.shubchynskyi.entity.animals.Animal;
-import com.javarush.island.shubchynskyi.exception.IslandException;
-import com.javarush.island.shubchynskyi.preferences.AnimalPref;
-import com.javarush.island.shubchynskyi.preferences.PlantPref;
+import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
+import com.javarush.island.shubchynskyi.utils.FieldCreator;
 
-import static com.javarush.island.shubchynskyi.preferences.PlantPref.*;
-import static com.javarush.island.shubchynskyi.preferences.Preferences.*;
-import static com.javarush.island.shubchynskyi.preferences.Preferences.MAX_FOOD;
-
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.javarush.island.shubchynskyi.settings.Constants.*;
 
 public abstract class Plant implements Cloneable {
 
@@ -22,21 +16,23 @@ public abstract class Plant implements Cloneable {
 //    private Set<Plant> oneTypeAnimals = new HashSet<>();
 
     private String name;
-    private final PlantEnums type;
+    private final EntityEnums type;
     private double weight;
     private final int maxPerCell;
+    private final String avatar;
     private boolean isAlive = true;
 
     public Plant() {
-        try {
-            this.name = (String) PlantPref.class.getField(this.getClass().getSimpleName().toLowerCase() + NAME).get(PlantPref.class);
-            this.type = (PlantPref.PlantEnums) PlantPref.class.getField(this.getClass().getSimpleName().toLowerCase() + TYPE).get(PlantPref.class);
-            this.weight = PlantPref.class.getField(this.getClass().getSimpleName().toLowerCase() + WEIGHT).getDouble(PlantPref.class);
-            this.maxPerCell = PlantPref.class.getField(this.getClass().getSimpleName().toLowerCase() + MAX_PER_CELL).getInt(PlantPref.class);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new IslandException(e);
-        }
+        this.name = (String) FieldCreator.getField(this, NAME);
+        this.type = (EntityEnums) FieldCreator.getField(this, TYPE);
+        this.weight = (double) FieldCreator.getField(this, WEIGHT);
+        this.maxPerCell = (int) FieldCreator.getField(this, MAX_PER_CELL);
+        this.avatar = (String) FieldCreator.getField(this, AVATAR);
+    }
 
+
+    public String getAvatar() {
+        return avatar;
     }
 
     public void setWeight(double weight) {
@@ -51,7 +47,7 @@ public abstract class Plant implements Cloneable {
         return name;
     }
 
-    public PlantEnums getType() {
+    public EntityEnums getType() {
         return type;
     }
 
@@ -90,4 +86,6 @@ public abstract class Plant implements Cloneable {
             throw new AssertionError();
         }
     }
+
+
 }

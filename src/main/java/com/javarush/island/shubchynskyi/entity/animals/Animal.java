@@ -1,8 +1,7 @@
 package com.javarush.island.shubchynskyi.entity.animals;
 
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
-import com.javarush.island.shubchynskyi.exception.IslandException;
-import com.javarush.island.shubchynskyi.preferences.AnimalPref;
+import com.javarush.island.shubchynskyi.utils.FieldCreator;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
 import java.util.HashSet;
@@ -10,8 +9,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.javarush.island.shubchynskyi.preferences.AnimalPref.AnimalEnums;
-import static com.javarush.island.shubchynskyi.preferences.Preferences.*;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
+import static com.javarush.island.shubchynskyi.settings.Constants.*;
 
 
 public abstract class Animal implements Cloneable {
@@ -21,37 +20,33 @@ public abstract class Animal implements Cloneable {
     //TODO вынести в конкретный класс для создания списка одного типа
 //    private Set<Animal> oneTypeAnimals = new HashSet<>();
 
-    public Cell getCurrentCell() {
-        return currentCell;
-    }
-
-    public void setCurrentCell(Cell currentCell) {
-        this.currentCell = currentCell;
-    }
-
     private Cell currentCell;
+
     private String name;
-    private final AnimalEnums type;
+    private final EntityEnums type;
     private final double weight;
     private final int maxPerCell;
     private final int speed;
     private double maxFood;
     private final String avatar;
     private boolean isAlive = true;
-
     public Animal() {
-        try {
-            this.name = (String) AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + NAME).get(AnimalPref.class);
-            this.type = (AnimalEnums) AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + TYPE).get(AnimalPref.class);
-            this.weight = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + WEIGHT).getDouble(AnimalPref.class);
-            this.maxPerCell = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + MAX_PER_CELL).getInt(AnimalPref.class);
-            this.speed = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + SPEED).getInt(AnimalPref.class);
-            this.maxFood = AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + MAX_FOOD).getDouble(AnimalPref.class);
-            this.avatar = (String) AnimalPref.class.getField(this.getClass().getSimpleName().toLowerCase() + AVATAR).get(AnimalPref.class);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new IslandException(e);
-        }
+        this.name = (String) FieldCreator.getField(this, NAME);
+        this.type = (EntityEnums) FieldCreator.getField(this, TYPE);
+        this.weight = (double) FieldCreator.getField(this, WEIGHT);
+        this.maxPerCell = (int) FieldCreator.getField(this, MAX_PER_CELL);
+        this.speed = (int) FieldCreator.getField(this, SPEED);
+        this.maxFood = (double) FieldCreator.getField(this, MAX_FOOD);
+        this.avatar = (String) FieldCreator.getField(this, AVATAR);
+    }
 
+
+    public Cell getCurrentCell() {
+        return currentCell;
+    }
+
+    public void setCurrentCell(Cell currentCell) {
+        this.currentCell = currentCell;
     }
 
     public void setAlive(boolean alive) {
@@ -67,7 +62,7 @@ public abstract class Animal implements Cloneable {
         return isAlive;
     }
 
-    public AnimalEnums getType() {
+    public EntityEnums getType() {
         return type;
     }
 
@@ -98,7 +93,7 @@ public abstract class Animal implements Cloneable {
         if (stepCount == 0) return;
 
         // удалиться из списка текущей ячейки
-        getCurrentCell().animalsInCell.get(getType()).remove(this);
+        getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
 
         //делаю шаги
         for (int i = 0; i < stepCount; i++) {
@@ -107,7 +102,7 @@ public abstract class Animal implements Cloneable {
             int count = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
 
             // проверка на максимум животных
-            int maxAnimalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getType()).size();
+            int maxAnimalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getAvatar()).size();
 
             if (getMaxPerCell() < maxAnimalInCell) {
                 // новая ячейка стала текущей, если позволяет место
@@ -117,12 +112,12 @@ public abstract class Animal implements Cloneable {
             //если места нет, ход пропущен
         }
         // добавляюсь в список конечной ячейки
-        if (getCurrentCell().animalsInCell.containsKey(getType())) {
-            getCurrentCell().animalsInCell.get(getType()).add(this);
+        if (getCurrentCell().animalsInCell.containsKey(getAvatar())) {
+            getCurrentCell().animalsInCell.get(getAvatar()).add(this);
         } else {
             Set<Animal> newSet = new HashSet<>();
             newSet.add(this);
-            getCurrentCell().animalsInCell.put(getType(), newSet);
+            getCurrentCell().animalsInCell.put(getAvatar(), newSet);
         }
     }
 
@@ -133,8 +128,6 @@ public abstract class Animal implements Cloneable {
         // полученное значение проверить с максимумом в ячейке и создать не более максимума (метод getAnimal в entityFactory)
         //
     }
-
-
 
 
     @Override
@@ -155,10 +148,23 @@ public abstract class Animal implements Cloneable {
         try {
             Animal result = (Animal) super.clone();
             result.name = result.name + " " + animalCount.incrementAndGet();
+//            result.setCurrentCell(cell);
             return result;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public Animal clone(Cell cell) {
+        try {
+            Animal result = (Animal) super.clone();
+            result.name = result.name + " " + animalCount.incrementAndGet();
+            result.setCurrentCell(cell);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+
     }
 
     public String getAvatar() {

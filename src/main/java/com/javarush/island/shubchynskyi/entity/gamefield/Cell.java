@@ -2,8 +2,6 @@ package com.javarush.island.shubchynskyi.entity.gamefield;
 
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
-import com.javarush.island.shubchynskyi.preferences.AnimalPref;
-import com.javarush.island.shubchynskyi.preferences.PlantPref;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,9 +16,10 @@ public class Cell {
     }
 
     private final List<Cell> neighbours = new ArrayList<>();
-    public Map<AnimalPref.AnimalEnums, Set<Animal>> animalsInCell = new ConcurrentHashMap<>();
 
-    public Map<PlantPref.PlantEnums, Set<Plant>> plantsInCell = new ConcurrentHashMap<>();
+    public Map<String, Set<Animal>> animalsInCell = new ConcurrentHashMap<>();
+
+    public Map<String, Set<Plant>> plantsInCell = new ConcurrentHashMap<>();
 
 
     public List<Cell> getNeighbours() {
@@ -36,11 +35,11 @@ public class Cell {
     public String toString() {
         List<String> plantsStatistic = new ArrayList<>();
         for (var var : plantsInCell.entrySet()) {
-            plantsStatistic.add(var.getKey().toString() + " : " + var.getValue().size());
+            plantsStatistic.add(var.getKey() + " : " + var.getValue().size());
         }
         List<String> animalsStatistic = new ArrayList<>();
         for (var var : animalsInCell.entrySet()) {
-            animalsStatistic.add(var.getKey().toString() + " : " + var.getValue().size());
+            animalsStatistic.add(var.getKey() + " : " + var.getValue().size());
         }
 
         int i = 10;

@@ -5,16 +5,15 @@ public class IslandException extends RuntimeException {
     }
 
     public IslandException(String message) {
+
         super(message);
     }
 
     public IslandException(String message, Throwable cause) {
-        super(message, cause);
+        System.out.println(message + cause);
     }
 
     public IslandException(Throwable cause) {
-        // TODO logic
-//        super(cause);
-        System.out.println("Error" + cause);
+        super(cause);
     }
 }
