@@ -4,14 +4,12 @@ import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.utils.FieldCreator;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
 
 
 public abstract class Animal implements Cloneable {
@@ -31,6 +29,7 @@ public abstract class Animal implements Cloneable {
     private double maxFood;
     private final String avatar;
     private boolean isAlive = true;
+
     public Animal() {
         this.name = (String) FieldCreator.getField(this, NAME);
         this.type = (EntityEnums) FieldCreator.getField(this, TYPE);
@@ -116,12 +115,25 @@ public abstract class Animal implements Cloneable {
         }
     }
 
-    public void reproduction() {
-        // генерируем число
-        // если false - выход
-        // иначе от 1 до 6 детенышей - или ввести максимум для каждого класса
-        // полученное значение проверить с максимумом в ячейке и создать не более максимума (метод getAnimal в entityFactory)
-        //
+    //TODO задать шансы и количество детенышей в зависимости от типа
+    //нужно вводить очередь, т.к. объекты ходят и размножатся повторно
+    public void spawn() {
+        // генерируем число - шанс 10% что пойдем дальше
+        int spawnChance = Generator.getRandom(0, 10);
+        if (spawnChance == 0) {
+            int maxBaby = maxPerCell - getCurrentCell().animalsInCell.get(getAvatar()).size();
+            if (maxBaby != 0) {
+                maxBaby = Generator.getRandom(1, maxBaby + 1);
+                for (Animal animalPrototype : animalPrototypes) {
+                    if(animalPrototype.avatar.equals(getAvatar())) {
+                        Animal animal = animalPrototype.clone();
+                        for (int i = 0; i < maxBaby; i++) {
+                            getCurrentCell().animalsInCell.get(getAvatar()).add(animal.clone());
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

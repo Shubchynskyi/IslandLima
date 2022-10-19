@@ -114,11 +114,21 @@ public class GameField {
     //делаем шаг
     public void makeStep() {
 
+//        for (Cell[] cells : gameField) {
+//            for (Cell cell : cells) {
+//                for (var var : cell.animalsInCell.entrySet()) {
+//                    for (Animal animal : var.getValue()) {
+//                        animal.move();
+//                    }
+//                }
+//            }
+//        }
+
         for (Cell[] cells : gameField) {
             for (Cell cell : cells) {
                 for (var var : cell.animalsInCell.entrySet()) {
                     for (Animal animal : var.getValue()) {
-                        animal.move();
+                        animal.spawn();
                     }
                 }
             }
@@ -129,7 +139,8 @@ public class GameField {
     //вывод статистики
     public void printState() {
 
-        System.out.println(gameField[1][1]);
+//        System.out.println(statisticMap); // общая статистика
+        System.out.println(gameField[1][1]); // по ячейке для теста
 
 //        статистика по каждой ячейке
 //        for (int y = 0; y < height; y++) {
