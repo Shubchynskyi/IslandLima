@@ -1,11 +1,16 @@
 package com.javarush.island.shubchynskyi.entity.animals;
 
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
+import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.utils.FieldCreator;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
@@ -19,16 +24,20 @@ public abstract class Animal implements Cloneable {
     //TODO вынести в конкретный класс для создания списка одного типа
 //    private Set<Animal> oneTypeAnimals = new HashSet<>();
 
-    private Cell currentCell;
 
     private String name;
     private final EntityEnums type;
-    private final double weight;
+    private double weight;
     private final int maxPerCell;
     private final int speed;
-    private double maxFood;
+    private final double maxFood;
     private final String avatar;
+
+    private Cell currentCell;
     private boolean isAlive = true;
+    private final double maxWeight;
+    private final double criticalWeight; // TODO добавить уменьшение веса после хода
+    private Map<String, Integer> chancesToEat;
 
     public Animal() {
         this.name = (String) FieldCreator.getField(this, NAME);
@@ -38,8 +47,30 @@ public abstract class Animal implements Cloneable {
         this.speed = (int) FieldCreator.getField(this, SPEED);
         this.maxFood = (double) FieldCreator.getField(this, MAX_FOOD);
         this.avatar = (String) FieldCreator.getField(this, AVATAR);
+        this.maxWeight = this.weight;
+        this.criticalWeight = this.weight - this.maxFood;
     }
 
+    public Map<String, Integer> getChancesToEat() {
+        return chancesToEat;
+    }
+
+    public void setChancesToEat(Map<String, Integer> chancesToEat) {
+        this.chancesToEat = chancesToEat;
+    }
+
+//    public Map<String, Integer> getChancesToEat() {
+//        return chancesToEat;
+//    }
+
+
+    public void increaseWeight(double weight) {
+        this.weight = this.weight + weight;
+    }
+
+    public void decreaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
 
     public Cell getCurrentCell() {
         return currentCell;
@@ -51,11 +82,6 @@ public abstract class Animal implements Cloneable {
 
     public void setAlive(boolean alive) {
         isAlive = alive;
-    }
-
-    public void inMaxFood(float maxFood) {
-        //TODO logic
-        this.maxFood = maxFood;
     }
 
     public boolean isAlive() {
@@ -119,13 +145,13 @@ public abstract class Animal implements Cloneable {
     //нужно вводить очередь, т.к. объекты ходят и размножатся повторно
     public void spawn() {
         // генерируем число - шанс 10% что пойдем дальше
-        int spawnChance = Generator.getRandom(0, 10);
+        int spawnChance = Generator.getRandom(0, 1);
         if (spawnChance == 0) {
             int maxBaby = maxPerCell - getCurrentCell().animalsInCell.get(getAvatar()).size();
             if (maxBaby != 0) {
                 maxBaby = Generator.getRandom(1, maxBaby + 1);
                 for (Animal animalPrototype : animalPrototypes) {
-                    if(animalPrototype.avatar.equals(getAvatar())) {
+                    if (animalPrototype.avatar.equals(getAvatar())) {
                         for (int i = 0; i < maxBaby; i++) {
                             getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone());
                         }
@@ -133,6 +159,158 @@ public abstract class Animal implements Cloneable {
                 }
             }
         }
+    }
+
+
+    // TODO % веса в конце хода, вынести процент потери веса в настройки
+    public void weightLoss() {
+        double weight = getMaxFood() / 20;      //5%
+        decreaseWeight(weight);
+        if (getWeight() <= criticalWeight) {
+            dead();
+        }
+    }
+
+    public void eat() {
+        if (getWeight() < maxWeight) {
+            if (this instanceof Omnivore) {
+                // рандомно выбираю кого буду есть (растение или животное)
+                if (Generator.getRandom(0, 2) == 1) {
+                    tryToEatAnimal();
+                } else tryToEatPlant();
+
+            } else if (this instanceof Predator) {
+                // выбираем животное, вызываем eat(Animal)
+//                System.out.println(getName() + " пробует есть");
+                tryToEatAnimal();
+//
+
+            } else {
+                // едим растение, вызываем eat(Plant)
+                tryToEatPlant();
+            }
+        }
+    }
+
+    private void tryToEatPlant() {
+
+        Set<Map.Entry<String, Set<Plant>>> entries =
+                getCurrentCell().plantsInCell.entrySet().stream()
+                        .filter(o -> o.getValue().size() > 0)
+                        .collect(Collectors.toSet());
+
+
+        Objects.requireNonNull(entries.stream()
+                        .findAny().orElse(null))
+                .getValue().stream()
+                .findAny()
+                .ifPresent(this::eat);
+
+//        Objects.requireNonNull(getCurrentCell().plantsInCell.entrySet().stream()
+//                        .filter(o -> o.getValue().size() > 0)
+//                        .findAny().orElse(null))
+//                .getValue().stream()
+//                .findAny().ifPresent(this::eat);
+    }
+
+    // TODO не работает случайный выбор
+    private void tryToEatAnimal() {
+
+
+//        Object[] animalsKey = getCurrentCell().animalsInCell.keySet().toArray();
+//        Object key = animalsKey[Generator.getRandom(0, animalsKey.length)];
+
+
+
+        // получаю Set тех кого не ноль и кого можно есть (Set обеспечивает рандомный выбор типа жертвы)
+        Set<Map.Entry<String, Set<Animal>>> entries =
+                getCurrentCell().animalsInCell.entrySet().stream()
+                        .filter(o -> o.getValue().size() > 0)
+                        .filter(o -> chancesToEat.containsKey(o.getKey()))
+                        .collect(Collectors.toSet());
+
+
+        Objects.requireNonNull(entries.stream()
+                .findAny().orElse(null))
+                .getValue().stream()
+                .findAny()
+                .ifPresent(this::eat);
+
+//        Set<Animal> collect = animals1.stream()
+//                .skip(Generator.getRandom(0, animals1.size()))
+//                .collect(Collectors.toSet());
+//
+//        collect.stream().findAny().ifPresent(this::eat);
+
+//        animals1.stream()
+//                .skip(Generator.getRandom(0, animals1.size()))
+//                .findAny().ifPresent(this::eat);
+
+
+//        Set<Animal> randomSet;
+//
+//        for (int i = 0; i < random; i++) {
+//            entries.stream().skip()
+//        }
+//        entries
+//                        .peek(System.out::println).collect(Collectors.toSet()));
+//                        .findAny().orElse(null))
+//
+//                .getValue());
+
+//        for (Map.Entry<String, Set<Animal>> animals : entries) {
+//            System.out.println(animals.getKey() + "-" + animals.getValue().size());
+//        }
+//        System.out.println();
+//        for (Animal stringSetEntry : animals1) {
+//            System.out.println(stringSetEntry.getName());
+//        }
+//        System.out.println();
+//        for (Animal stringSetEntry : collect) {
+//            System.out.println(stringSetEntry.getName());
+//        }
+
+//                .findAny().ifPresent(this::eat);
+
+
+//        Objects.requireNonNull(getCurrentCell().animalsInCell.entrySet().stream()
+//                        .filter(o -> o.getValue().size() > 0)
+//                        .filter(o -> chancesToEat.containsKey(o.getKey()))
+//                        .findAny().orElse(null))
+//                .getValue().stream()
+//                .findAny().ifPresent(this::eat);
+    }
+
+    private void eat(Animal animal) {
+//        System.out.println("жертва - " + animal.getName()); // TODO remove
+        int percent = chancesToEat.get(animal.getAvatar());
+        if (Generator.checkChance(percent)) {
+            double maxTakeFood = maxWeight - getWeight();
+            if (maxTakeFood > animal.getWeight()) {
+                maxTakeFood = animal.getWeight();
+            }
+            increaseWeight(maxTakeFood);
+            animal.dead();
+        }
+    }
+
+    private void eat(Plant plant) {
+        double maxTakeFood = maxWeight - getWeight();   // максимум еды котую может съесть животное
+        if (maxTakeFood > plant.getWeight()) {          // если в растении меньше, то уменьшаем показатель
+            maxTakeFood = plant.getWeight();
+        }
+        increaseWeight(maxTakeFood);                    // увеличиваем текущий вес
+        plant.decreaseWeight(maxTakeFood);              // уменьшаем вес растения
+
+        if (plant.getWeight() == 0) {                   // если вес растения 0, то оно мертво
+            plant.dead();
+        }
+    }
+
+
+    public void dead() {
+        this.setAlive(false);
+        getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
     }
 
 
@@ -169,7 +347,6 @@ public abstract class Animal implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
-
     }
 
     public String getAvatar() {

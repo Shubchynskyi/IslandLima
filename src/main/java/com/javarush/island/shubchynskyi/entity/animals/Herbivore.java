@@ -7,8 +7,9 @@ import java.util.Set;
 
 public interface Herbivore {
 
-    default void eat(Plant plant) {
-
-    }
+//    default void eat() {
+//
+//        System.out.println("Поел растение");
+//    }
 
 }

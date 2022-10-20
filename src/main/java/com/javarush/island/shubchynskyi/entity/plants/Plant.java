@@ -45,8 +45,13 @@ public abstract class Plant implements Cloneable {
         this.avatar = (String) FieldCreator.getField(this, AVATAR);
     }
 
+    public void decreaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
+
+    // TODO задать шанс роста для каждого типа
     public void spawn() {
-        int spawnChance = Generator.getRandom(0, 10);
+        int spawnChance = Generator.getRandom(0, 5);
         if (spawnChance == 0) {
             int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
             int toSpawn = Generator.getRandom(0, maxSpawn);
@@ -58,6 +63,11 @@ public abstract class Plant implements Cloneable {
                 }
             }
         }
+    }
+
+    public void dead() {
+        this.setAlive(false);
+        getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
     }
 
 

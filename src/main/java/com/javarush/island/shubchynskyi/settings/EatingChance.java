@@ -1,6 +1,14 @@
 package com.javarush.island.shubchynskyi.settings;
 
+import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
 
 public class EatingChance {
     private EatingChance() {
@@ -12,6 +20,22 @@ public class EatingChance {
     public static int[][] getEatingChance() {
         return eatingChance;
     }
+
+    public static Map<String, Integer> fillAnimalToEat(Animal animal) {
+        Map<String, Integer> result = new HashMap<>();
+        int thisId = animal.getType().ordinal();                   // получил свой id
+
+        for (Animal animalPrototype : animalPrototypes) {
+            int targetId = animalPrototype.getType().ordinal();
+            int eatChance = getEatingChance()[thisId][targetId];
+            if (eatChance != 0) {
+                result.put(animalPrototype.getAvatar(), eatChance);
+            }
+        }
+        return result;
+    }
+
+
 
     static {
         /* Herbivores */

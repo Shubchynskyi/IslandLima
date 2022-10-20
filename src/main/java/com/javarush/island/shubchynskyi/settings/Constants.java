@@ -6,7 +6,7 @@ public class Constants {
 
 
 
-    /** GameSettings */
+    /** For Field Settings */
     public static final String NAME = "Name";
     public static final String TYPE = "Type";
     public static final String WEIGHT = "Weight";

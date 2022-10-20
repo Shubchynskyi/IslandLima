@@ -191,6 +191,9 @@ public class EntitySettings {
                 }
             }
         }
+        for (Animal animalPrototype : animalPrototypes) {
+            animalPrototype.setChancesToEat(EatingChance.fillAnimalToEat(animalPrototype));
+        }
     }
 
 
