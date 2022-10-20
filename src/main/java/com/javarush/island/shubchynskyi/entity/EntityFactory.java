@@ -31,7 +31,7 @@ public class EntityFactory {
             resultCell.plantsInCell.put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
             int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
             for (int i = 0; i <= randomInt; i++) {
-                resultCell.plantsInCell.get(prototype.getAvatar()).add(prototype.clone());
+                resultCell.plantsInCell.get(prototype.getAvatar()).add(prototype.clone(resultCell));
             }
         }
 

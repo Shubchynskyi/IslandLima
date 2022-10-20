@@ -1,18 +1,11 @@
 package com.javarush.island.shubchynskyi;
 
 import com.javarush.island.shubchynskyi.entity.EntityFactory;
-import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-
-public class Runner {
+public class ConsoleRunner {
     public static void main(String[] args) {
         GameField gamefield = new GameField(new EntityFactory());
 

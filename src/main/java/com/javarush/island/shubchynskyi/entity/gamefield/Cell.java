@@ -5,10 +5,14 @@ import com.javarush.island.shubchynskyi.entity.plants.Plant;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Cell {
     private final int x;
     private final int y;
+
+    private final Lock lock = new ReentrantLock(true);
 
     public Cell(int x, int y) {
         this.x = x;

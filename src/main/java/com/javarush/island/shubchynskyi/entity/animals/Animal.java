@@ -115,7 +115,7 @@ public abstract class Animal implements Cloneable {
         }
     }
 
-    //TODO задать шансы и количество детенышей в зависимости от типа
+    // TODO задать шансы и количество детенышей в зависимости от типа
     //нужно вводить очередь, т.к. объекты ходят и размножатся повторно
     public void spawn() {
         // генерируем число - шанс 10% что пойдем дальше
@@ -126,9 +126,8 @@ public abstract class Animal implements Cloneable {
                 maxBaby = Generator.getRandom(1, maxBaby + 1);
                 for (Animal animalPrototype : animalPrototypes) {
                     if(animalPrototype.avatar.equals(getAvatar())) {
-                        Animal animal = animalPrototype.clone();
                         for (int i = 0; i < maxBaby; i++) {
-                            getCurrentCell().animalsInCell.get(getAvatar()).add(animal.clone());
+                            getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone());
                         }
                     }
                 }

@@ -1,12 +1,17 @@
 package com.javarush.island.shubchynskyi.entity.plants;
 
+import com.javarush.island.shubchynskyi.entity.animals.Animal;
+import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 import com.javarush.island.shubchynskyi.utils.FieldCreator;
+import com.javarush.island.shubchynskyi.utils.Generator;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
 
 public abstract class Plant implements Cloneable {
 
@@ -14,6 +19,16 @@ public abstract class Plant implements Cloneable {
 
     //TODO вынести в конкретный класс для создания списка одного типа
 //    private Set<Plant> oneTypeAnimals = new HashSet<>();
+
+    public Cell getCurrentCell() {
+        return currentCell;
+    }
+
+    public void setCurrentCell(Cell currentCell) {
+        this.currentCell = currentCell;
+    }
+
+    private Cell currentCell;
 
     private String name;
     private final EntityEnums type;
@@ -29,6 +44,22 @@ public abstract class Plant implements Cloneable {
         this.maxPerCell = (int) FieldCreator.getField(this, MAX_PER_CELL);
         this.avatar = (String) FieldCreator.getField(this, AVATAR);
     }
+
+    public void spawn() {
+        int spawnChance = Generator.getRandom(0, 10);
+        if (spawnChance == 0) {
+            int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
+            int toSpawn = Generator.getRandom(0, maxSpawn);
+            for (Plant plantPrototype : plantPrototypes) {
+                if(plantPrototype.avatar.equals(getAvatar())) {
+                    for (int i = 0; i < toSpawn; i++) {
+                        getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone());
+                    }
+                }
+            }
+        }
+    }
+
 
 
     public String getAvatar() {
@@ -85,6 +116,18 @@ public abstract class Plant implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public Plant clone(Cell cell) {
+        try {
+            Plant result = (Plant) super.clone();
+            result.name = result.name + " " + plantCount.incrementAndGet();
+            result.setCurrentCell(cell);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+
     }
 
 
