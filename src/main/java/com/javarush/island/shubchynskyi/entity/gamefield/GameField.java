@@ -6,9 +6,9 @@ import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.settings.EntitySettings;
 import com.javarush.island.shubchynskyi.settings.GameSettings;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
 public class GameField {
@@ -56,6 +56,12 @@ public class GameField {
                     oldValue = statisticMap.get(type);
                     statisticMap.put(type, oldValue + newValue);
                 }
+                for (var var : cell.plantsInCell.entrySet()) {
+                    type = var.getKey(); // получил ключ
+                    newValue = var.getValue().size(); // размер сета по ключу map
+                    oldValue = statisticMap.get(type);
+                    statisticMap.put(type, oldValue + newValue);
+                }
             }
         }
 
@@ -77,14 +83,14 @@ public class GameField {
         // определяем соседние ячейки
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if ((y - 1) >= 0)
-                    gameField[x][y].addNeighbour(gameField[x][y - 1]);
-                if ((x + 1) <= width - 1)
-                    gameField[x][y].addNeighbour(gameField[x + 1][y]);
-                if ((y + 1) <= height - 1)
-                    gameField[x][y].addNeighbour(gameField[x][y + 1]);
-                if ((x - 1) >= 0)
-                    gameField[x][y].addNeighbour(gameField[x - 1][y]);
+                if ((y - 1) >= 0)               gameField[x][y].addNeighbour(gameField[x][y - 1]);
+
+                if ((x + 1) <= width - 1)       gameField[x][y].addNeighbour(gameField[x + 1][y]);
+
+                if ((y + 1) <= height - 1)      gameField[x][y].addNeighbour(gameField[x][y + 1]);
+
+                if ((x - 1) >= 0)               gameField[x][y].addNeighbour(gameField[x - 1][y]);
+
             }
         }
     }
@@ -114,33 +120,44 @@ public class GameField {
     //делаем шаг
     public void makeStep() {
 
+        for (Cell[] cells : gameField) {
+            for (Cell cell : cells) {
+
+                for (var var : cell.animalsInCell.entrySet()) {
+                    for (Animal animal : var.getValue()) {
+
+                        if(animal.isAlive()) {
+//                            System.out.println(LocalTime.now());
+                            animal.eat();
+                            animal.move();
+                            animal.spawn();
+//                            System.out.println(LocalTime.now());
+
+                        } else System.err.println("is alive = false!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    }
+                }
+                cell.spawnPlants();
+            }
+        }
+
 //        for (Cell[] cells : gameField) {
 //            for (Cell cell : cells) {
 //                for (var var : cell.animalsInCell.entrySet()) {
 //                    for (Animal animal : var.getValue()) {
-//                        animal.move();
+//                        animal.spawn();
 //                    }
 //                }
 //            }
 //        }
-
-        for (Cell[] cells : gameField) {
-            for (Cell cell : cells) {
-                for (var var : cell.animalsInCell.entrySet()) {
-                    for (Animal animal : var.getValue()) {
-                        animal.spawn();
-                    }
-                }
-            }
-        }
 
     }
 
     //вывод статистики
     public void printState() {
 
-//        System.out.println(statisticMap); // общая статистика
-        System.out.println(gameField[1][1]); // по ячейке для теста
+        System.out.println(getStatistic()); // общая статистика
+        System.out.println(LocalTime.now());
+//        System.out.println(gameField[1][1]); // по ячейке для теста
 
 //        статистика по каждой ячейке
 //        for (int y = 0; y < height; y++) {

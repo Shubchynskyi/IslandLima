@@ -15,7 +15,7 @@ import java.util.Set;
 public class EntitySettings {
     private EntitySettings() {}
 
-    public static Set<Animal> animalPrototypes = new HashSet<>();
+    public final static Set<Animal> animalPrototypes = new HashSet<>();
 
     /** Packages for animals prototype */
     private static final String HERBIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.herbivores";

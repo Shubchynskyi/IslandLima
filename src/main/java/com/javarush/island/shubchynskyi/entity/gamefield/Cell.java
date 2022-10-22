@@ -2,11 +2,14 @@ package com.javarush.island.shubchynskyi.entity.gamefield;
 
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
+import com.javarush.island.shubchynskyi.utils.Generator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
 
 public class Cell {
     private final int x;
@@ -30,8 +33,23 @@ public class Cell {
         return neighbours;
     }
 
-    public void addNeighbour (Cell cell) {
+    public void addNeighbour(Cell cell) {
         neighbours.add(cell);
+    }
+
+    public void spawnPlants() {
+
+        for (Plant plantPrototype : plantPrototypes) {
+            if (Generator.getRandom(0,5) == 0) {
+                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
+                if (toSpawn > 1) {
+                    toSpawn = Generator.getRandom(0, toSpawn);
+                    for (int i = 0; i < toSpawn; i++) {
+                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+                    }
+                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+            }
+        }
     }
 
     //TODO remove when finish
@@ -46,7 +64,7 @@ public class Cell {
             animalsStatistic.add(var.getKey() + " : " + var.getValue().size());
         }
 
-        int i = 10;
+
         return "Cell [" + x + "/" + y + "] //info: \n" +
                 "\t" + "cell neighbours is " + getNeighbours().size() + "\n" +
                 "\t" + "plants in cell: " +

@@ -17,8 +17,6 @@ public abstract class Plant implements Cloneable {
 
     private static final AtomicInteger plantCount = new AtomicInteger(0);
 
-    //TODO вынести в конкретный класс для создания списка одного типа
-//    private Set<Plant> oneTypeAnimals = new HashSet<>();
 
     public Cell getCurrentCell() {
         return currentCell;
@@ -50,23 +48,23 @@ public abstract class Plant implements Cloneable {
     }
 
     // TODO задать шанс роста для каждого типа
-    public void spawn() {
-        int spawnChance = Generator.getRandom(0, 5);
-        if (spawnChance == 0) {
-            int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
-            int toSpawn = Generator.getRandom(0, maxSpawn);
-            for (Plant plantPrototype : plantPrototypes) {
-                if(plantPrototype.avatar.equals(getAvatar())) {
-                    for (int i = 0; i < toSpawn; i++) {
-                        getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone());
-                    }
-                }
-            }
-        }
-    }
+//    public void spawn() {
+//        int spawnChance = Generator.getRandom(0, 5);
+//        if (spawnChance == 0) {
+//            int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
+//            int toSpawn = Generator.getRandom(0, maxSpawn);
+//            for (Plant plantPrototype : plantPrototypes) {
+//                if(plantPrototype.avatar.equals(getAvatar())) {
+//                    for (int i = 0; i < toSpawn; i++) {
+//                        getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void dead() {
-        this.setAlive(false);
+//        this.setAlive(false);
         getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
     }
 
