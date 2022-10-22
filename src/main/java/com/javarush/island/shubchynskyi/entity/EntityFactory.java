@@ -6,7 +6,6 @@ import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.settings.EntitySettings;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
-import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
@@ -39,23 +38,21 @@ public class EntityFactory {
     }
 
     // TODO убрать и сделать прототипы отдельным классом (это и будет фабрика)
-    //
-//     рождаем новых животных / рождаем новые растения
-    public void getAnimal (Animal animal) {
-        Set<Animal> result = new HashSet<>();
-//        Animal result = null;
+//    //
+////     рождаем новых животных / рождаем новые растения
+//    public void getAnimal (Animal animal) {
+//        Set<Animal> result = new HashSet<>();
+////        Animal result = null;
+//
+//        for (Animal prototype : animalPrototypes) {
+////            if(prototype.getType() == type){
+////                result = prototype.clone();
+////            }
+//        }
 
-        for (Animal prototype : animalPrototypes) {
-//            if(prototype.getType() == type){
-//                result = prototype.clone();
-//            }
-        }
 
-        //TODO убрать возможность возврата null
 //        return (Set<Animal>) result;
-    }
-
-
+//    }
 
 
 }

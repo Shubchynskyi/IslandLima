@@ -15,6 +15,10 @@ public class Cell {
     private final int x;
     private final int y;
 
+    public Lock getLock() {
+        return lock;
+    }
+
     private final Lock lock = new ReentrantLock(true);
 
     public Cell(int x, int y) {

@@ -15,6 +15,7 @@ import java.util.Set;
 public class EntitySettings {
     private EntitySettings() {}
 
+    // TODO перенести в фабрику
     public final static Set<Animal> animalPrototypes = new HashSet<>();
 
     /** Packages for animals prototype */
@@ -197,7 +198,7 @@ public class EntitySettings {
     }
 
 
-
+    // TODO перенести в фабрику
     public static Set<Plant> plantPrototypes = new HashSet<>();
 
     /** Packages for plants prototype */

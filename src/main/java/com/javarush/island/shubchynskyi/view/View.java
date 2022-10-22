@@ -5,4 +5,6 @@ public interface View {
     void showMap();
 
     void showStatistic();
+
+    void gameOver();
 }

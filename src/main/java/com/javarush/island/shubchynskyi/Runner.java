@@ -1,31 +1,32 @@
 package com.javarush.island.shubchynskyi;
 
 import com.javarush.island.shubchynskyi.entity.EntityFactory;
-import com.javarush.island.shubchynskyi.entity.animals.Animal;
-import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
+import com.javarush.island.shubchynskyi.services.GameWorker;
+import com.javarush.island.shubchynskyi.view.ConsoleView;
+import com.javarush.island.shubchynskyi.view.View;
 
 
-public class ConsoleRunner {
+public class Runner {
     public static void main(String[] args) {
         GameField gamefield = new GameField(new EntityFactory());
+        View viewer = new ConsoleView(gamefield);
+        GameWorker gameWorker = new GameWorker(gamefield, viewer);
 
-        Cell cell = gamefield.gameField[1][1];
-        System.out.println(cell);
 
-        gamefield.printState();
-        for (int i = 0; i < 10000; i++) {
+//        Cell cell = gamefield.gameMap[1][1];
+//        System.out.println(cell);
+//
+//        gamefield.printState();
 
-            gamefield.makeStep();
-            gamefield.printState();
-        }
+
 
 
 //        gamefield.makeStep();
 //        gamefield.printState();
 
-        cell = gamefield.gameField[1][1];
-        System.out.println(cell);
+//        cell = gamefield.gameMap[1][1];
+//        System.out.println(cell);
 
 
 //        String type = "\uD83D\uDC17";
