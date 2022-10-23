@@ -10,7 +10,7 @@ public class ConsoleRunner {
     public static void main(String[] args) {
         GameField gamefield = new GameField(new EntityFactory());
 
-        Cell cell = gamefield.gameField[1][1];
+        Cell cell = gamefield.getGameField()[1][1];
         System.out.println(cell);
 
         gamefield.printState();
@@ -24,7 +24,7 @@ public class ConsoleRunner {
 //        gamefield.makeStep();
 //        gamefield.printState();
 
-        cell = gamefield.gameField[1][1];
+        cell = gamefield.getGameField()[1][1];
         System.out.println(cell);
 
 

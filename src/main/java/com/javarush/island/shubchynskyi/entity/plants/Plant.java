@@ -64,7 +64,7 @@ public abstract class Plant implements Cloneable {
 //    }
 
     public void dead() {
-//        this.setAlive(false);
+        this.setAlive(false);
         getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
     }
 

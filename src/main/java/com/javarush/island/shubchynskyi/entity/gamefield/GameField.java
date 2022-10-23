@@ -16,17 +16,24 @@ public class GameField {
     private final int width = GameSettings.GAME_FIELD_WIDTH;
     private final int height = GameSettings.GAME_FIELD_HEIGHT;
 
+    private final EntityFactory entityFactory;
+
     public GameField(EntityFactory entityFactory) {
         this.entityFactory = entityFactory;
         initialize();
-        print();
     }
 
-    public final EntityFactory entityFactory;
-
-    public final Cell[][] gameField = new Cell[width][height];
+    private final Cell[][] gameField = new Cell[width][height];
 
     private final Map<String, Integer> statisticMap = new HashMap<>();
+
+    public Cell[][] getGameField() {
+        return gameField;
+    }
+
+    public EntityFactory getEntityFactory() {
+        return entityFactory;
+    }
 
     private void statisticMapInit() {
         for (Animal prototype : EntitySettings.animalPrototypes) {
@@ -48,7 +55,7 @@ public class GameField {
         int newValue;
         String type;
 
-        for (Cell[] cells : gameField) {
+        for (Cell[] cells : getGameField()) {
             for (Cell cell : cells) {
                 for (var var : cell.animalsInCell.entrySet()) {
                     type = var.getKey(); // получил ключ
@@ -73,54 +80,28 @@ public class GameField {
     }
 
 
-    //заселяем животными и растениями
+
     private void initialize() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 gameField[x][y] = entityFactory.getFilledCell(x, y);
             }
         }
-        // определяем соседние ячейки
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 if ((y - 1) >= 0)               gameField[x][y].addNeighbour(gameField[x][y - 1]);
-
                 if ((x + 1) <= width - 1)       gameField[x][y].addNeighbour(gameField[x + 1][y]);
-
                 if ((y + 1) <= height - 1)      gameField[x][y].addNeighbour(gameField[x][y + 1]);
-
                 if ((x - 1) >= 0)               gameField[x][y].addNeighbour(gameField[x - 1][y]);
-
             }
         }
     }
 
-    //отрисовка поля
-    private void print() {
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                // TODO при отрисовке вывести аватар животного которых больше, исключить гусениц
-//                // тут получаю ENUM максимального животного, далее его нужно передать в метод и вернуть аватар
-//                field[x][y].animalsInCell.entrySet().stream()
-//                        .max((o1, o2) -> o2.getValue().size() - o1.getValue().size()).get().getKey();
-//
-//
-                System.out.print("*");
-                if (x == width - 1) {
-                    System.out.println();
-                }
-            }
-        }
-
-    }
-
-    // создаем пул потоков
-
-    //делаем шаг
+    // TODO remove
     public void makeStep() {
 
-        for (Cell[] cells : gameField) {
+        for (Cell[] cells : getGameField()) {
             for (Cell cell : cells) {
 
                 for (var var : cell.animalsInCell.entrySet()) {
@@ -139,36 +120,10 @@ public class GameField {
                 cell.spawnPlants();
             }
         }
-
-//        for (Cell[] cells : gameField) {
-//            for (Cell cell : cells) {
-//                for (var var : cell.animalsInCell.entrySet()) {
-//                    for (Animal animal : var.getValue()) {
-//                        animal.spawn();
-//                    }
-//                }
-//            }
-//        }
-
     }
 
-    //вывод статистики
     public void printState() {
+        getStatistic();
 
-        System.out.println(getStatistic()); // общая статистика
-        System.out.println(LocalTime.now());
-//        System.out.println(gameField[1][1]); // по ячейке для теста
-
-//        статистика по каждой ячейке
-//        for (int y = 0; y < height; y++) {
-//            for (int x = 0; x < width; x++) {
-//
-//                System.out.println(gameField[x][y].toString());
-//
-//
-//            }
-//        }
     }
-
-
 }
