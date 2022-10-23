@@ -15,48 +15,38 @@ public class Cell {
     private final int x;
     private final int y;
 
-    public Lock getLock() {
-        return lock;
-    }
-
-    private final Lock lock = new ReentrantLock(true);
-
     public Cell(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    private final Lock lock = new ReentrantLock(true);
     private final List<Cell> neighbours = new ArrayList<>();
 
     public Map<String, Set<Animal>> animalsInCell = new ConcurrentHashMap<>();
-
     public Map<String, Set<Plant>> plantsInCell = new ConcurrentHashMap<>();
-
 
     public List<Cell> getNeighbours() {
         return neighbours;
     }
-
     public void addNeighbour(Cell cell) {
         neighbours.add(cell);
     }
 
-
-    //TODO remove
-//    public void spawnPlants() {
-//
-//        for (Plant plantPrototype : plantPrototypes) {
-//            if (Generator.getRandom(0,5) == 0) {
-//                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
-//                if (toSpawn > 1) {
-//                    toSpawn = Generator.getRandom(0, toSpawn);
-//                    for (int i = 0; i < toSpawn; i++) {
-//                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
-//                    }
-//                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
-//            }
-//        }
-//    }
+    // TODO remove if no need
+    public void spawnPlants() {
+        for (Plant plantPrototype : plantPrototypes) {
+            if (Generator.getRandom(0,5) == 0) {
+                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
+                if (toSpawn > 1) {
+                    toSpawn = Generator.getRandom(0, toSpawn);
+                    for (int i = 0; i < toSpawn; i++) {
+                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+                    }
+                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+            }
+        }
+    }
 
     //TODO remove when finish
     @Override
@@ -70,7 +60,6 @@ public class Cell {
             animalsStatistic.add(var.getKey() + " : " + var.getValue().size());
         }
 
-
         return "Cell [" + x + "/" + y + "] //info: \n" +
                 "\t" + "cell neighbours is " + getNeighbours().size() + "\n" +
                 "\t" + "plants in cell: " +
@@ -78,7 +67,6 @@ public class Cell {
                 "\t" + "animals in cell: " +
                 animalsStatistic;
     }
-
 
     @Override
     public boolean equals(Object o) {
