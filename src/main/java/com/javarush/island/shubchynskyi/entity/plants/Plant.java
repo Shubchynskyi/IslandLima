@@ -1,6 +1,5 @@
 package com.javarush.island.shubchynskyi.entity.plants;
 
-import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 import com.javarush.island.shubchynskyi.utils.FieldCreator;
@@ -10,7 +9,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
 
 public abstract class Plant implements Cloneable {
@@ -48,14 +46,56 @@ public abstract class Plant implements Cloneable {
     }
 
     // TODO задать шанс роста для каждого типа
+
+    public void grow() {
+
+        int toSpawn = getMaxPerCell() - getCurrentCell().plantsInCell.get(getAvatar()).size();
+
+        if (toSpawn > 0) {
+            for (Plant plantPrototype : plantPrototypes) {
+                if(toSpawn == 1) {
+                    getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
+                }
+                if (plantPrototype.getAvatar().equals(getAvatar())) {
+                    toSpawn = Generator.getRandom(0, toSpawn);
+                    for (int i = 0; i < toSpawn; i++) {
+                        getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+
 //    public void spawn() {
-//        int spawnChance = Generator.getRandom(0, 5);
-//        if (spawnChance == 0) {
-//            int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
-//            int toSpawn = Generator.getRandom(0, maxSpawn);
-//            for (Plant plantPrototype : plantPrototypes) {
-//                if(plantPrototype.avatar.equals(getAvatar())) {
+
+//        for (Plant plantPrototype : plantPrototypes) {
+//            if (Generator.getRandom(0,5) == 0) {
+//                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
+//                if (toSpawn > 1) {
+//                    toSpawn = Generator.getRandom(0, toSpawn);
 //                    for (int i = 0; i < toSpawn; i++) {
+//                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+//                    }
+//                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+//            }
+//        }
+
+//        if (Generator.getRandom(0, 2) == 0) {
+//            int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
+//            if (maxSpawn > 1) {
+//                int toSpawn = Generator.getRandom(0, maxSpawn);
+//                for (Plant plantPrototype : plantPrototypes) {
+//                    if(plantPrototype.avatar.equals(getAvatar())) {
+//                        for (int i = 0; i < toSpawn; i++) {
+//                            getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
+//                        }
+//                    }
+//                }
+//            } else if (maxSpawn == 1) {
+//                for (Plant plantPrototype : plantPrototypes) {
+//                    if(plantPrototype.avatar.equals(getAvatar())) {
 //                        getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
 //                    }
 //                }
@@ -67,7 +107,6 @@ public abstract class Plant implements Cloneable {
 //        this.setAlive(false);
         getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
     }
-
 
 
     public String getAvatar() {

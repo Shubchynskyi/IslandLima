@@ -41,20 +41,22 @@ public class Cell {
         neighbours.add(cell);
     }
 
-    public void spawnPlants() {
 
-        for (Plant plantPrototype : plantPrototypes) {
-            if (Generator.getRandom(0,5) == 0) {
-                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
-                if (toSpawn > 1) {
-                    toSpawn = Generator.getRandom(0, toSpawn);
-                    for (int i = 0; i < toSpawn; i++) {
-                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
-                    }
-                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
-            }
-        }
-    }
+    //TODO remove
+//    public void spawnPlants() {
+//
+//        for (Plant plantPrototype : plantPrototypes) {
+//            if (Generator.getRandom(0,5) == 0) {
+//                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
+//                if (toSpawn > 1) {
+//                    toSpawn = Generator.getRandom(0, toSpawn);
+//                    for (int i = 0; i < toSpawn; i++) {
+//                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+//                    }
+//                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
+//            }
+//        }
+//    }
 
     //TODO remove when finish
     @Override

@@ -6,6 +6,7 @@ import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.settings.EntitySettings;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class ConsoleView implements View {
 
     @Override
     public void showStatistic() {
+        System.out.println(LocalTime.now());
         System.out.println(getStatistic());
     }
 

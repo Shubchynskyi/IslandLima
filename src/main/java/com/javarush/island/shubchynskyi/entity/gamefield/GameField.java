@@ -129,9 +129,9 @@ public class GameField {
 
                 for (var var : cell.animalsInCell.entrySet()) {
                     for (Animal animal : var.getValue()) {
-                        animal.eat();
+//                        animal.eat();
                         animal.move();
-                        animal.spawn();
+//                        animal.spawn();
 //                        if(animal.isAlive()) {
 ////                            System.out.println(LocalTime.now());
 //
@@ -140,7 +140,7 @@ public class GameField {
 //                        } else System.err.println("is alive = false!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     }
                 }
-                cell.spawnPlants();
+//                cell.spawnPlants();
             }
         }
 

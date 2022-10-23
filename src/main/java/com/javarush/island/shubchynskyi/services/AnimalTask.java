@@ -13,9 +13,14 @@ public class AnimalTask {
     }
 
     public void startTask(){
-        animal.eat();
-        animal.move();
-        animal.spawn();
+        if (animal.isAlive()) {
+            animal.eat();
+            animal.move();
+            animal.spawn();
+        }
+//        else {
+//            System.err.println("Животное мертво!");
+//        }
     }
 
 }

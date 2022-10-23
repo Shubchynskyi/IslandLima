@@ -28,8 +28,8 @@ public class AnimalWorker implements Runnable {
             for (Cell cell : cells) {
                 cell.getLock().lock();
                 try {
-                    if (cell.animalsInCell.get(animal.getAvatar()).size() > 0) {
 
+                    if (cell.animalsInCell.get(animal.getAvatar()).size() > 0) {
                         cell.animalsInCell
                                 .get(animal.getAvatar())
                                 .forEach(o -> animalTasks.add(new AnimalTask(o)));
@@ -37,7 +37,6 @@ public class AnimalWorker implements Runnable {
                 } finally {
                     cell.getLock().unlock();
                 }
-
             }
         }
         //запускаем и отчищаем очередь
