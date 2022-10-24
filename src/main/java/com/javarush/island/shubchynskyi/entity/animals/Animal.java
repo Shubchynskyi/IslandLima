@@ -16,7 +16,7 @@ import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnu
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
 
 
-public abstract class Animal implements Cloneable {
+public abstract class Animal implements Organism, Cloneable {
 
     private static final AtomicInteger animalCount = new AtomicInteger(0);
 
@@ -46,14 +46,16 @@ public abstract class Animal implements Cloneable {
         this.criticalWeight = this.weight - this.maxFood;
     }
 
-
-    public void increaseWeight(double weight) {
-        this.weight = this.weight + weight;
+    @Override
+    public void startLife() {
+        eat();
+        spawn();
+        move();
     }
 
-    public void decreaseWeight(double weight) {
-        this.weight = this.weight - weight;
-    }
+
+
+
 
 
     // TODO убрать лишнее
@@ -105,14 +107,7 @@ public abstract class Animal implements Cloneable {
         }
     }
 
-    // TODO % веса в конце хода, вынести процент потери веса в настройки
-    public void weightLoss() {
-        double weight = getMaxFood() / 10;      //10%
-        decreaseWeight(weight);
-        if (getWeight() <= getCriticalWeight()) {
-            dead();
-        }
-    }
+
 
     public void eat() {
         if (getWeight() < getMaxWeight()) {
@@ -183,6 +178,23 @@ public abstract class Animal implements Cloneable {
 
         if (plant.getWeight() <= 0) {
             plant.dead();
+        }
+    }
+
+    public void increaseWeight(double weight) {
+        this.weight = this.weight + weight;
+    }
+
+    public void decreaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
+
+    // TODO % веса в конце хода, вынести процент потери веса в настройки
+    public void weightLoss() {
+        double weight = getMaxFood() / 10;      //10%
+        decreaseWeight(weight);
+        if (getWeight() <= getCriticalWeight()) {
+            dead();
         }
     }
 

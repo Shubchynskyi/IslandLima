@@ -1,5 +1,6 @@
 package com.javarush.island.shubchynskyi.entity.plants;
 
+import com.javarush.island.shubchynskyi.entity.animals.Organism;
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 import com.javarush.island.shubchynskyi.utils.FieldCreator;
@@ -11,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
 
-public abstract class Plant implements Cloneable {
+public abstract class Plant implements Organism, Cloneable {
 
     private static final AtomicInteger plantCount = new AtomicInteger(0);
 
@@ -61,6 +62,11 @@ public abstract class Plant implements Cloneable {
 
     public void decreaseWeight(double weight) {
         this.weight = this.weight - weight;
+    }
+
+    @Override
+    public void startLife() {
+        grow();
     }
 
     // TODO задать шанс роста для каждого типа

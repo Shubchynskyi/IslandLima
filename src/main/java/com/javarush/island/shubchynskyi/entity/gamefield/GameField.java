@@ -1,42 +1,36 @@
 package com.javarush.island.shubchynskyi.entity.gamefield;
 
-import com.javarush.island.shubchynskyi.entity.EntityFactory;
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
-import com.javarush.island.shubchynskyi.settings.EntitySettings;
 import com.javarush.island.shubchynskyi.settings.GameSettings;
+import com.javarush.island.shubchynskyi.utils.Generator;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
+import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
 
 
 public class GameField {
 
     private final int width = GameSettings.GAME_FIELD_WIDTH;
     private final int height = GameSettings.GAME_FIELD_HEIGHT;
-    private final EntityFactory entityFactory;
     private final Cell[][] gameField = new Cell[width][height];
-//    private final Map<String, Integer> statisticMap = new HashMap<>();
 
-    public GameField(EntityFactory entityFactory) {
-        this.entityFactory = entityFactory;
+    public GameField() {
         initialize();
     }
 
     public Cell[][] getGameField() {
         return gameField;
     }
-    public EntityFactory getEntityFactory() {
-        return entityFactory;
-    }
+
     public int getWidth() { return width; }
     public int getHeight() {return height; }
 
     private void initialize() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                gameField[x][y] = entityFactory.getFilledCell(x, y);
+                gameField[x][y] = getFilledCell(x, y);
             }
         }
         for (int x = 0; x < width; x++) {
@@ -48,6 +42,30 @@ public class GameField {
             }
         }
     }
+
+    private Cell getFilledCell(int x, int y) {
+        Cell resultCell = new Cell(x, y);
+
+        for (Animal prototype : animalPrototypes) {
+            resultCell.animalsInCell.put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
+            int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
+            for (int i = 0; i <= randomInt; i++) {
+                resultCell.animalsInCell.get(prototype.getAvatar()).add(prototype.clone(resultCell));
+            }
+        }
+
+        for (Plant prototype : plantPrototypes) {
+            resultCell.plantsInCell.put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
+            int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
+            for (int i = 0; i <= randomInt; i++) {
+                resultCell.plantsInCell.get(prototype.getAvatar()).add(prototype.clone(resultCell));
+            }
+        }
+
+        return resultCell;
+    }
+
+
 
 //    private void statisticMapInit() {
 //        for (Animal prototype : EntitySettings.animalPrototypes) {

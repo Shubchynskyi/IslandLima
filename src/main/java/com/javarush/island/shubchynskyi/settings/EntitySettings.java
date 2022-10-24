@@ -22,7 +22,7 @@ public class EntitySettings {
     private static final String HERBIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.herbivores";
     private static final String OMNIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.omnivores";
     private static final String PREDATORS_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.predators";
-    private static final String[] ANIMAL_PACKAGES = new String[] {HERBIVORES_PACKAGE, OMNIVORES_PACKAGE, PREDATORS_PACKAGE};
+    public static final String[] ANIMAL_PACKAGES = new String[] {HERBIVORES_PACKAGE, OMNIVORES_PACKAGE, PREDATORS_PACKAGE};
 
     /** Animal Enums */
     public enum EntityEnums {
@@ -31,8 +31,6 @@ public class EntitySettings {
         GRASS, TREE
     }
 
-    // TODO remove if not used
-    public static final int predatorsTryingToEat = 3;
 
 
 
@@ -176,7 +174,11 @@ public class EntitySettings {
 
     //TODO вынести в метод (животные + растения)
     static {
-        for (String arg : ANIMAL_PACKAGES) {
+        fillPrototypes(ANIMAL_PACKAGES);
+    }
+
+    private static void fillPrototypes(String[] packageWithEntityClasses) {
+        for (String arg : packageWithEntityClasses) {
             InputStream stream = ClassLoader.getSystemClassLoader()
                     .getResourceAsStream(arg.replaceAll("[.]", "/"));
             if (stream != null) {
