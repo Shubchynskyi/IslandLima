@@ -15,27 +15,27 @@ public class Caterpillar extends Animal implements Herbivore {
     @Override
     public void spawn() {
 
-        int maxToSpawn = 0;
-
-        for (var var : getCurrentCell().plantsInCell.entrySet()) {
-            maxToSpawn += var.getValue().size();
-        }
-        maxToSpawn = maxToSpawn*3;
-        int freeSlot = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
-        if(maxToSpawn > freeSlot) {
-            maxToSpawn = freeSlot;
-        }
-        if (maxToSpawn > 1) {
-            int toSpawn = Generator.getRandom(0, maxToSpawn);
-
-            for (Animal animalPrototype : animalPrototypes) {
-                if (animalPrototype.getAvatar().equals(getAvatar())) {
-                    for (int i = 0; i < toSpawn; i++) {
-                        getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
-                    }
-                }
-            }
-        }
+//        int maxToSpawn = 0;
+//
+//        for (var var : getCurrentCell().plantsInCell.entrySet()) {
+//            maxToSpawn += var.getValue().size();
+//        }
+//        maxToSpawn = maxToSpawn*3;
+//        int freeSlot = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
+//        if(maxToSpawn > freeSlot) {
+//            maxToSpawn = freeSlot;
+//        }
+//        if (maxToSpawn > 1) {
+//            int toSpawn = Generator.getRandom(0, maxToSpawn);
+//
+//            for (Animal animalPrototype : animalPrototypes) {
+//                if (animalPrototype.getAvatar().equals(getAvatar())) {
+//                    for (int i = 0; i < toSpawn; i++) {
+//                        getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+//                    }
+//                }
+//            }
+//        }
 
     }
 

@@ -18,26 +18,29 @@ public class OrganismWorker implements Runnable {
         this.organism = organism;
     }
 
-
-
     @Override
     public void run() {
 
         for (Cell[] cells : gameField.getGameField()) {
             for (Cell cell : cells) {
-                cell.getLock().lock();
+//                cell.getLock().lock();
                 try {
-                    if (cell.animalsInCell.get(organism.getAvatar()).size() > 0) {
-                        cell.animalsInCell
-                                .get(organism.getAvatar())
-                                .forEach(o -> organismTasks.add(new OrganismTask(o)));
-                    } else if (cell.plantsInCell.get(organism.getAvatar()).size() > 0) {
+                    if(cell.animalsInCell.get(organism.getAvatar()) != null){
+                        if (cell.animalsInCell.get(organism.getAvatar()).size() > 0) {
+                            cell.animalsInCell
+                                    .get(organism.getAvatar())
+                                    .forEach(o -> organismTasks.add(new OrganismTask(o)));
+                        }
+                    } else
+
+                    if (cell.plantsInCell.get(organism.getAvatar()).size() > 0) {
+
                         cell.plantsInCell
                                 .get(organism.getAvatar())
                                 .forEach(o -> organismTasks.add(new OrganismTask(o)));
                     }
                 } finally {
-                    cell.getLock().unlock();
+//                    cell.getLock().unlock();
                 }
             }
         }

@@ -66,7 +66,7 @@ public class EntitySettings {
     public static final String bearName = "Bear";
     public static final EntityEnums bearType = EntityEnums.BEAR;
     public static final double bearWeight = 500;
-    public static final int bearMaxPerCell = 5;
+    public static final int bearMaxPerCell = 3; //5
     public static final int bearSpeed = 2;
     public static final double bearMaxFood = 80;
     public static final String bearAvatar = "\uD83D\uDC3B";
@@ -84,7 +84,7 @@ public class EntitySettings {
     public static final String horseName = "Horse";
     public static final EntityEnums horseType = EntityEnums.HORSE;
     public static final double horseWeight = 400;
-    public static final int horseMaxPerCell = 20; //20
+    public static final int horseMaxPerCell = 5; //20
     public static final int horseSpeed = 4;
     public static final double horseMaxFood = 60;
     public static final String horseAvatar = "\uD83D\uDC0E";

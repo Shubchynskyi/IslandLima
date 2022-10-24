@@ -48,9 +48,9 @@ public abstract class Animal implements Organism, Cloneable {
 
     @Override
     public void startLife() {
+        move();
         eat();
         spawn();
-        move();
     }
 
 
@@ -88,7 +88,7 @@ public abstract class Animal implements Organism, Cloneable {
     // TODO задать шансы и количество детенышей в зависимости от типа
     public void spawn() {
         // генерируем число - шанс 10% что пойдем дальше
-        if (getWeight() == getCriticalWeight() + getMaxFood() * 0.5) {
+        if (getWeight() > getCriticalWeight() + getMaxFood() * 0.5) {
             int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
             if (spawnChance == 0) {
                 int maxBaby = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();

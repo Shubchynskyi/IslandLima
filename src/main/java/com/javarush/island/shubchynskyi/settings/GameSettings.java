@@ -7,5 +7,5 @@ public class GameSettings {
     public static final int GAME_FIELD_WIDTH = 100;
     public static final int GAME_FIELD_HEIGHT = 20;
 
-    public static final int UPDATE_PERIOD = 1000;
+    public static final int UPDATE_PERIOD = 150;
 }

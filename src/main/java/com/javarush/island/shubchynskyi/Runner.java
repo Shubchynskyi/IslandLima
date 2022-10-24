@@ -1,6 +1,9 @@
 package com.javarush.island.shubchynskyi;
 
+import com.javarush.island.shubchynskyi.entity.animals.Organism;
+import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
+import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.services.GameWorker;
 import com.javarush.island.shubchynskyi.view.ConsoleView;
 import com.javarush.island.shubchynskyi.view.View;
@@ -22,18 +25,23 @@ public class Runner {
 //        }
 
 
-//        Cell cell = gamefield.gameMap[1][1];
+//        Cell cell = gamefield.getGameField()[1][1];
 //        System.out.println(cell);
 //
-//        gamefield.printState();
-
-
-
-
-//        gamefield.makeStep();
-//        gamefield.printState();
-
-//        cell = gamefield.gameMap[1][1];
+//                String type = "\uD83C\uDF3F";
+//        System.out.println(type);
+//        System.out.println(cell.plantsInCell.get(type).size());
+//
+//
+//        Organism plant = cell.plantsInCell.get(type).stream().findAny().get();
+//        plant.startLife();
+//        plant.startLife();
+//        plant.startLife();
+//        System.out.println(plant.getAvatar());
+//
+//        System.out.println(cell.plantsInCell.get(type).size());
+//
+//        cell = gamefield.getGameField()[1][1];
 //        System.out.println(cell);
 
 
