@@ -4,9 +4,7 @@ import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
 

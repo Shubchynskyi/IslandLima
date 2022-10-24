@@ -16,8 +16,6 @@ public class EntitySettings {
     private EntitySettings() {}
 
     public final static Set<Animal> animalPrototypes = new HashSet<>();
-    public final static Set<Plant> plantPrototypes = new HashSet<>();
-
 
     /** Packages for animals prototype */
     private static final String HERBIVORES_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.herbivores";
@@ -25,12 +23,14 @@ public class EntitySettings {
     private static final String PREDATORS_PACKAGE = "com.javarush.island.shubchynskyi.entity.animals.predators";
     public static final String[] ANIMAL_PACKAGES = new String[] {HERBIVORES_PACKAGE, OMNIVORES_PACKAGE, PREDATORS_PACKAGE};
 
+    // TODO перенести в фабрику
+    public static Set<Plant> plantPrototypes = new HashSet<>();
 
-    //TODO вынести в метод (животные + растения)
-    static {
-        fillPrototypes(ANIMAL_PACKAGES);
+    /** Packages for plants prototype */
+    private static final String EVERGREEN_PACKAGE = "com.javarush.island.shubchynskyi.entity.plants.evergreen";
+    private static final String[] PLANT_PACKAGES = new String[] {EVERGREEN_PACKAGE};
 
-    }
+
 
 
     /** Animal Enums */
@@ -177,9 +177,18 @@ public class EntitySettings {
 
 
 
+    //TODO вынести в метод (животные + растения)
+    static {
+        fillPrototypes(animalPrototypes, ANIMAL_PACKAGES);
 
+        fillPrototypes(plantPrototypes, PLANT_PACKAGES);
 
-    private static void fillPrototypes(String[] packageWithEntityClasses) {
+        for (Animal animalPrototype : animalPrototypes) {
+            animalPrototype.setChancesToEat(EatingChance.fillAnimalToEat(animalPrototype));
+        }
+    }
+
+    private static <T> void fillPrototypes(Set<T> prototypeSet, String... packageWithEntityClasses) {
         for (String arg : packageWithEntityClasses) {
             InputStream stream = ClassLoader.getSystemClassLoader()
                     .getResourceAsStream(arg.replaceAll("[.]", "/"));
@@ -188,7 +197,7 @@ public class EntitySettings {
                 List<String> collect = reader.lines().map(s -> (s.substring(0, s.length() - 6))).toList();
                 for (String s : collect) {
                     try {
-                        animalPrototypes.add((Animal) Class.forName(arg + "." + s).getConstructor().newInstance());
+                        prototypeSet.add((T) Class.forName(arg + "." + s).getConstructor().newInstance());
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                              NoSuchMethodException | ClassNotFoundException e) {
                         throw new IslandException(e);
@@ -196,22 +205,8 @@ public class EntitySettings {
                 }
             }
         }
-        for (Animal animalPrototype : animalPrototypes) {
-            animalPrototype.setChancesToEat(EatingChance.fillAnimalToEat(animalPrototype));
-        }
     }
 
-
-
-
-    /** Packages for plants prototype */
-    private static final String EVERGREEN_PACKAGE = "com.javarush.island.shubchynskyi.entity.plants.evergreen";
-    private static final String[] PLANT_PACKAGES = new String[] {EVERGREEN_PACKAGE};
-
-//    /** Plant Enums */
-//    public enum PlantEnums {
-//        GRASS, TREE
-//    }
 
     /** GRASS */
     public static final String grassName = "Grass";
@@ -231,24 +226,24 @@ public class EntitySettings {
 
 
     //TODO вынести в метод (животные + растения)
-    static {
-        for (String arg : PLANT_PACKAGES) {
-            InputStream stream = ClassLoader.getSystemClassLoader()
-                    .getResourceAsStream(arg.replaceAll("[.]", "/"));
-            if (stream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                List<String> collect = reader.lines().map(s -> (s.substring(0, s.length() - 6))).toList();
-                for (String s : collect) {
-                    try {
-                        plantPrototypes.add((Plant) Class.forName(arg + "." + s).getConstructor().newInstance());
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException | ClassNotFoundException e) {
-                        throw new IslandException(e);
-                    }
-                }
-            }
-        }
-    }
+//    static {
+//        for (String arg : PLANT_PACKAGES) {
+//            InputStream stream = ClassLoader.getSystemClassLoader()
+//                    .getResourceAsStream(arg.replaceAll("[.]", "/"));
+//            if (stream != null) {
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+//                List<String> collect = reader.lines().map(s -> (s.substring(0, s.length() - 6))).toList();
+//                for (String s : collect) {
+//                    try {
+//                        plantPrototypes.add((Plant) Class.forName(arg + "." + s).getConstructor().newInstance());
+//                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+//                             NoSuchMethodException | ClassNotFoundException e) {
+//                        throw new IslandException(e);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 
 
