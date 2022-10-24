@@ -28,7 +28,6 @@ public class AnimalWorker implements Runnable {
             for (Cell cell : cells) {
                 cell.getLock().lock();
                 try {
-
                     if (cell.animalsInCell.get(animal.getAvatar()).size() > 0) {
                         cell.animalsInCell
                                 .get(animal.getAvatar())
