@@ -24,7 +24,7 @@ public class AnimalWorker implements Runnable {
     @Override
     public void run() {
 
-        for (Cell[] cells : gameField.gameMap) {
+        for (Cell[] cells : gameField.getGameField()) {
             for (Cell cell : cells) {
                 cell.getLock().lock();
                 try {

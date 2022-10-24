@@ -11,6 +11,8 @@ public class PlantTask {
     }
 
     public void startTask() {
-        plant.grow();
+        if (plant.isAlive()) {
+            plant.grow();
+        }
     }
 }

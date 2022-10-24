@@ -51,7 +51,7 @@ public class GameWorker implements Runnable {
 //        animalWorkers.add(plantWorkers)
 
         threadPool.scheduleWithFixedDelay(() -> {
-                    ExecutorService executorService = Executors.newCachedThreadPool();
+                    ExecutorService executorService = Executors.newFixedThreadPool(PROCESSORS_COUNT);
                     animalWorkers.forEach(executorService::submit);
                     plantWorkers.forEach(executorService::submit);
                     executorService.shutdown();

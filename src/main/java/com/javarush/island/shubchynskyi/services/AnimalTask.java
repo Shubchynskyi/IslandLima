@@ -14,8 +14,8 @@ public class AnimalTask {
 
     public void startTask(){
         if (animal.isAlive()) {
-            animal.eat();
-            animal.move();
+//            animal.eat();
+//            animal.move();
             animal.spawn();
         }
 //        else {

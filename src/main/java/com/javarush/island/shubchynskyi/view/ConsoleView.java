@@ -57,7 +57,7 @@ public class ConsoleView implements View {
         int newValue;
         String type;
 
-        for (Cell[] cells : gameField.gameMap) {
+        for (Cell[] cells : gameField.getGameField()) {
             for (Cell cell : cells) {
                 for (var var : cell.animalsInCell.entrySet()) {
                     type = var.getKey(); // получил ключ

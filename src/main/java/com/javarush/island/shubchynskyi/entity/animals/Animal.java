@@ -46,65 +46,6 @@ public abstract class Animal implements Cloneable {
         this.criticalWeight = this.weight - this.maxFood;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public EntityEnums getType() {
-        return type;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public int getMaxPerCell() {
-        return maxPerCell;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public double getMaxFood() {
-        return maxFood;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public Cell getCurrentCell() {
-        return currentCell;
-    }
-
-    public boolean isAlive() {
-        return isAlive;
-    }
-
-    public double getMaxWeight() {
-        return maxWeight;
-    }
-
-    public double getCriticalWeight() {
-        return criticalWeight;
-    }
-
-    public Map<String, Integer> getChancesToEat() {
-        return chancesToEat;
-    }
-
-    public void setCurrentCell(Cell currentCell) {
-        this.currentCell = currentCell;
-    }
-
-    public void setAlive(boolean alive) {
-        isAlive = alive;
-    }
-
-    public void setChancesToEat(Map<String, Integer> chancesToEat) {
-        this.chancesToEat = chancesToEat;
-    }
 
     public void increaseWeight(double weight) {
         this.weight = this.weight + weight;
@@ -145,16 +86,18 @@ public abstract class Animal implements Cloneable {
     // TODO задать шансы и количество детенышей в зависимости от типа
     public void spawn() {
         // генерируем число - шанс 10% что пойдем дальше
-        int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
-        if (spawnChance == 0) {
-            int maxBaby = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
-            if (maxBaby > 2) maxBaby = 2;   // TODO максимум детенышей, вынести в настройки
-            if (maxBaby != 0) {
-                maxBaby = Generator.getRandom(1, maxBaby + 1);
-                for (Animal animalPrototype : animalPrototypes) {
-                    if (animalPrototype.getAvatar().equals(getAvatar())) {
-                        for (int i = 0; i < maxBaby; i++) {
-                            getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+        if (getWeight() == getCriticalWeight() + getMaxFood() * 0.5) {
+            int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
+            if (spawnChance == 0) {
+                int maxBaby = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
+                if (maxBaby > 2) maxBaby = 2;   // TODO максимум детенышей, вынести в настройки
+                if (maxBaby != 0) {
+                    maxBaby = Generator.getRandom(1, maxBaby + 1);
+                    for (Animal animalPrototype : animalPrototypes) {
+                        if (animalPrototype.getAvatar().equals(getAvatar())) {
+                            for (int i = 0; i < maxBaby; i++) {
+                                getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+                            }
                         }
                     }
                 }
@@ -162,12 +105,10 @@ public abstract class Animal implements Cloneable {
         }
     }
 
-
     // TODO % веса в конце хода, вынести процент потери веса в настройки
     public void weightLoss() {
         double weight = getMaxFood() / 10;      //10%
         decreaseWeight(weight);
-
         if (getWeight() <= getCriticalWeight()) {
             dead();
         }
@@ -250,6 +191,76 @@ public abstract class Animal implements Cloneable {
         setAlive(false);
     }
 
+    public Animal clone(Cell cell) {
+        try {
+            Animal result = (Animal) super.clone();
+            result.name = result.name + " " + animalCount.incrementAndGet();
+            result.setCurrentCell(cell);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public EntityEnums getType() {
+        return type;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public int getMaxPerCell() {
+        return maxPerCell;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public double getMaxFood() {
+        return maxFood;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public Cell getCurrentCell() {
+        return currentCell;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public double getMaxWeight() {
+        return maxWeight;
+    }
+
+    public double getCriticalWeight() {
+        return criticalWeight;
+    }
+
+    public Map<String, Integer> getChancesToEat() {
+        return chancesToEat;
+    }
+
+    public void setCurrentCell(Cell currentCell) {
+        this.currentCell = currentCell;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+
+    public void setChancesToEat(Map<String, Integer> chancesToEat) {
+        this.chancesToEat = chancesToEat;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -263,28 +274,4 @@ public abstract class Animal implements Cloneable {
     public int hashCode() {
         return Objects.hash(name);
     }
-
-    @Override
-    public Animal clone() {
-        try {
-            Animal result = (Animal) super.clone();
-            result.name = result.name + " " + animalCount.incrementAndGet();
-            return result;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
-
-    public Animal clone(Cell cell) {
-        try {
-            Animal result = (Animal) super.clone();
-            result.name = result.name + " " + animalCount.incrementAndGet();
-            result.setCurrentCell(cell);
-            return result;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
-
-
 }

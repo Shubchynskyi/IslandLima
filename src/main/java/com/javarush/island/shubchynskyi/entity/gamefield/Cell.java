@@ -21,14 +21,16 @@ public class Cell {
     }
 
     private final Lock lock = new ReentrantLock(true);
-    private final List<Cell> neighbours = new ArrayList<>();
 
+    private final List<Cell> neighbours = new ArrayList<>();
     public Map<String, Set<Animal>> animalsInCell = new ConcurrentHashMap<>();
     public Map<String, Set<Plant>> plantsInCell = new ConcurrentHashMap<>();
 
     public List<Cell> getNeighbours() {
         return neighbours;
     }
+    public Lock getLock() { return lock; }
+
     public void addNeighbour(Cell cell) {
         neighbours.add(cell);
     }
@@ -67,17 +69,20 @@ public class Cell {
                 "\t" + "animals in cell: " +
                 animalsStatistic;
     }
+            // TODO remove
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Cell cell = (Cell) o;
-        return x == cell.x && y == cell.y && Objects.equals(animalsInCell, cell.animalsInCell) && Objects.equals(plantsInCell, cell.plantsInCell);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Cell cell = (Cell) o;
+//        return x == cell.x && y == cell.y && Objects.equals(animalsInCell, cell.animalsInCell) && Objects.equals(plantsInCell, cell.plantsInCell);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(x, y, animalsInCell.size(), plantsInCell.size());
+//    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, animalsInCell.size(), plantsInCell.size());
-    }
+
 }

@@ -15,23 +15,14 @@ public abstract class Plant implements Cloneable {
 
     private static final AtomicInteger plantCount = new AtomicInteger(0);
 
-
-    public Cell getCurrentCell() {
-        return currentCell;
-    }
-
-    public void setCurrentCell(Cell currentCell) {
-        this.currentCell = currentCell;
-    }
-
-    private Cell currentCell;
-
     private String name;
     private final EntityEnums type;
     private double weight;
     private final int maxPerCell;
     private final String avatar;
+
     private boolean isAlive = true;
+    private Cell currentCell;
 
     public Plant() {
         this.name = (String) FieldCreator.getField(this, NAME);
@@ -41,12 +32,38 @@ public abstract class Plant implements Cloneable {
         this.avatar = (String) FieldCreator.getField(this, AVATAR);
     }
 
+    public String getName() {
+        return name;
+    }
+    public Cell getCurrentCell() {
+        return currentCell;
+    }
+    public double getWeight() {
+        return weight;
+    }
+    public int getMaxPerCell() {
+        return maxPerCell;
+    }
+    public String getAvatar() {
+        return avatar;
+    }
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+    public void setCurrentCell(Cell currentCell) {
+        this.currentCell = currentCell;
+    }
+
+
     public void decreaseWeight(double weight) {
         this.weight = this.weight - weight;
     }
 
     // TODO задать шанс роста для каждого типа
-
     public void grow() {
 
         int toSpawn = getMaxPerCell() - getCurrentCell().plantsInCell.get(getAvatar()).size();
@@ -104,41 +121,19 @@ public abstract class Plant implements Cloneable {
 //    }
 
     public void dead() {
-        this.setAlive(false);
         getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
+        this.setAlive(false);
     }
 
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public void setAlive(boolean alive) {
-        isAlive = alive;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public EntityEnums getType() {
-        return type;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public int getMaxPerCell() {
-        return maxPerCell;
-    }
-
-    public boolean isAlive() {
-        return isAlive;
+    public Plant clone(Cell cell) {
+        try {
+            Plant result = (Plant) super.clone();
+            result.name = result.name + " " + plantCount.incrementAndGet();
+            result.setCurrentCell(cell);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     @Override
@@ -153,29 +148,4 @@ public abstract class Plant implements Cloneable {
     public int hashCode() {
         return Objects.hash(name);
     }
-
-    @Override
-    public Plant clone() {
-        try {
-            Plant result = (Plant) super.clone();
-            result.name = result.name + " " + plantCount.incrementAndGet();
-            return result;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
-
-    public Plant clone(Cell cell) {
-        try {
-            Plant result = (Plant) super.clone();
-            result.name = result.name + " " + plantCount.incrementAndGet();
-            result.setCurrentCell(cell);
-            return result;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-
-    }
-
-
 }
