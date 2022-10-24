@@ -1,12 +1,9 @@
 package com.javarush.island.shubchynskyi.settings;
 
 public class Constants {
-
     private Constants() {}
 
-
-
-    /** For Field Settings */
+    //************************** For Field Settings **************************//
     public static final String NAME = "Name";
     public static final String TYPE = "Type";
     public static final String WEIGHT = "Weight";

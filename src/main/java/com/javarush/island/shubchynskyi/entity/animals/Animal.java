@@ -9,13 +9,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
-
+import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
 
 public abstract class Animal implements Organism, Cloneable {
 
@@ -54,99 +52,67 @@ public abstract class Animal implements Organism, Cloneable {
         spawn();
     }
 
-    private void takeLocks(Lock lock1, Lock lock2) {
-        boolean firstLockTaken = false;
-        boolean secondLockTaken = false;
-
-        while (true) {
-
-            try {
-                firstLockTaken = lock1.tryLock();
-                secondLockTaken = lock2.tryLock();
-            } finally {
-                if (firstLockTaken && secondLockTaken) {
-                    return;
-                }
-
-                if (firstLockTaken) {
-                    lock1.unlock();
-                }
-
-                if (secondLockTaken) {
-                    lock2.unlock();
-                }
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-
+    public void increaseWeight(double weight) {
+        this.weight = this.weight + weight;
     }
 
+    public void decreaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
 
-    // TODO убрать лишнее
+    public void weightLoss() {
+        double weight = getMaxFood() / 10;      //10%  //TODO вынести в настройки
+        decreaseWeight(weight);
+        if (getWeight() <= getCriticalWeight()) {
+            dead();
+        }
+    }
+
+    public void dead() {
+        getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
+        setAlive(false);
+    }
+
     public void move() {
-
-
         int stepCount = Generator.getRandom(0, getSpeed() + 1);
         if (stepCount == 0) return;
 
         for (int i = 0; i < stepCount; i++) {
-            //беру рандомную соседскую доступную ячейку
-            int count = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
-            //            System.out.println("Хочу шагать в ячейку " + getCurrentCell().getNeighbours().get(count).toString());
+            int randomNeighbourCell = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
+            int animalInTargetCell = getCurrentCell().getNeighbours().get(randomNeighbourCell).getAnimalsInCell().get(getAvatar()).size();
 
-            // проверка на максимум животных
-            int maxAnimalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getAvatar()).size();
-            //            System.out.printf("В целевой ячейке %d животных. Доступный максимум - %d%n", maxAnimalInCell, getMaxPerCell());
-
-            if (getMaxPerCell() > maxAnimalInCell) {
-                // новая ячейка стала текущей, если позволяет место
-//                takeLocks(getCurrentCell().getLock(), getCurrentCell().getNeighbours().get(count).getLock());
-//                try {
-                    getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
-                    setCurrentCell(getCurrentCell().getNeighbours().get(count));
-                    getCurrentCell().animalsInCell.get(getAvatar()).add(this);
-//                } finally {
-//                    getCurrentCell().getLock().unlock();
-//                    getCurrentCell().getNeighbours().get(count).getLock().unlock();
-//                }
-
+            if (getMaxPerCell() > animalInTargetCell) {
+                getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
+                setCurrentCell(getCurrentCell().getNeighbours().get(randomNeighbourCell));
+                getCurrentCell().getAnimalsInCell().get(getAvatar()).add(this);
             }
-            //если места нет, ход пропущен
         }
         weightLoss();
     }
 
     // TODO задать шансы и количество детенышей в зависимости от типа
     public void spawn() {
-
-        // генерируем число - шанс 10% что пойдем дальше
-        if (getWeight() > getCriticalWeight() + getMaxFood() * 0.5) {
-            getCurrentCell().getLock().lock();
-            try {
+        getCurrentCell().getLock().lock();
+        try {
+            if (getWeight() > getCriticalWeight() + getMaxFood() * 0.5) { //TODO вынести в настройки
                 int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
                 if (spawnChance == 0) {
-                    int maxBaby = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
+                    int maxBaby = getMaxPerCell() - getCurrentCell().getAnimalsInCell().get(getAvatar()).size();
                     if (maxBaby > 2) maxBaby = 2;   // TODO максимум детенышей, вынести в настройки
                     if (maxBaby != 0) {
                         maxBaby = Generator.getRandom(1, maxBaby + 1);
-                        for (Animal animalPrototype : animalPrototypes) {
+                        for (Animal animalPrototype : getAnimalPrototypes()) {
                             if (animalPrototype.getAvatar().equals(getAvatar())) {
                                 for (int i = 0; i < maxBaby; i++) {
-                                    getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+                                    getCurrentCell().getAnimalsInCell().get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
                                 }
                             }
                         }
                     }
                 }
-            } finally {
-                getCurrentCell().getLock().unlock();
             }
+        } finally {
+            getCurrentCell().getLock().unlock();
         }
     }
 
@@ -167,7 +133,7 @@ public abstract class Animal implements Organism, Cloneable {
 
     private void tryToEatPlant() {
         Set<Map.Entry<String, Set<Plant>>> entries =
-                getCurrentCell().plantsInCell.entrySet().stream()
+                getCurrentCell().getPlantsInCell().entrySet().stream()
                         .filter(o -> o.getValue().size() > 0)
                         .collect(Collectors.toSet());
 
@@ -183,7 +149,7 @@ public abstract class Animal implements Organism, Cloneable {
 
     private void tryToEatAnimal() {
         Set<Map.Entry<String, Set<Animal>>> entries =
-                getCurrentCell().animalsInCell.entrySet().stream()
+                getCurrentCell().getAnimalsInCell().entrySet().stream()
                         .filter(o -> o.getValue().size() > 0)
                         .filter(o -> getChancesToEat().containsKey(o.getKey()))
                         .collect(Collectors.toSet());
@@ -223,35 +189,6 @@ public abstract class Animal implements Organism, Cloneable {
         }
     }
 
-    public void increaseWeight(double weight) {
-        this.weight = this.weight + weight;
-    }
-
-    public void decreaseWeight(double weight) {
-        this.weight = this.weight - weight;
-    }
-
-    // TODO % веса в конце хода, вынести процент потери веса в настройки
-    public void weightLoss() {
-        double weight = getMaxFood() / 10;      //10%
-        decreaseWeight(weight);
-        if (getWeight() <= getCriticalWeight()) {
-            dead();
-        }
-    }
-
-    public void dead() {
-
-        // TODO тут возникают дед локи
-//        getCurrentCell().getLock().lock();
-//        try {
-        getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
-        setAlive(false);
-//        } finally {
-//            getCurrentCell().getLock().unlock();
-//        }
-    }
-
     public Animal clone(Cell cell) {
         try {
             Animal result = (Animal) super.clone();
@@ -262,6 +199,7 @@ public abstract class Animal implements Organism, Cloneable {
             throw new AssertionError();
         }
     }
+
 
     public String getName() {
         return name;
@@ -322,6 +260,7 @@ public abstract class Animal implements Organism, Cloneable {
     public void setChancesToEat(Map<String, Integer> chancesToEat) {
         this.chancesToEat = chancesToEat;
     }
+
 
     @Override
     public boolean equals(Object o) {

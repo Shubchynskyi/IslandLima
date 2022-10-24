@@ -2,13 +2,9 @@ package com.javarush.island.shubchynskyi.entity.animals.herbivores;
 
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.animals.Herbivore;
-import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
-import java.util.Map;
-import java.util.Set;
-
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
+import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
 
 public class Caterpillar extends Animal implements Herbivore {
 
@@ -19,21 +15,21 @@ public class Caterpillar extends Animal implements Herbivore {
         // TODO завязано на растениях, не рождаются до максимума, надо фиксить
         int maxToSpawn = 0;
 
-        for (var var : getCurrentCell().plantsInCell.entrySet()) {
+        for (var var : getCurrentCell().getPlantsInCell().entrySet()) {
             maxToSpawn += var.getValue().size();
         }
-        maxToSpawn = maxToSpawn*3;
-        int freeSlot = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
-        if(maxToSpawn > freeSlot) {
+        maxToSpawn = maxToSpawn * 3;
+        int freeSlot = getMaxPerCell() - getCurrentCell().getAnimalsInCell().get(getAvatar()).size();
+        if (maxToSpawn > freeSlot) {
             maxToSpawn = freeSlot;
         }
         if (maxToSpawn > 1) {
             int toSpawn = Generator.getRandom(0, maxToSpawn);
 
-            for (Animal animalPrototype : animalPrototypes) {
+            for (Animal animalPrototype : getAnimalPrototypes()) {
                 if (animalPrototype.getAvatar().equals(getAvatar())) {
                     for (int i = 0; i < toSpawn; i++) {
-                        getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+                        getCurrentCell().getAnimalsInCell().get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
                     }
                 }
             }

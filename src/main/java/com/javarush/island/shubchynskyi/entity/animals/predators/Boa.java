@@ -5,6 +5,4 @@ import com.javarush.island.shubchynskyi.entity.animals.Predator;
 
 public class Boa extends Animal implements Predator {
 
-
-
 }

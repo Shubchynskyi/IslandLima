@@ -1,10 +1,7 @@
 package com.javarush.island.shubchynskyi.services;
 
-
-
 import com.javarush.island.shubchynskyi.entity.animals.Organism;
 
-//тут будут задания для очереди
 public class OrganismTask {
 
     private final Organism organism;
@@ -13,13 +10,10 @@ public class OrganismTask {
         this.organism = organism;
     }
 
-    public void startTask(){
+    public void startTask() {
         if (organism.isAlive()) {
             organism.startLife();
         }
-//        else {
-//            System.err.println("Мертво!");
-//        }
     }
 
 }

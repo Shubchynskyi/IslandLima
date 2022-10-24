@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
+import static com.javarush.island.shubchynskyi.settings.Prototypes.getPlantPrototypes;
 
 public abstract class Plant implements Organism, Cloneable {
 
@@ -38,6 +38,84 @@ public abstract class Plant implements Organism, Cloneable {
         this.avatar = (String) FieldCreator.getField(this, AVATAR);
         maxWeight = weight;
     }
+
+    @Override
+    public void startLife() {
+        grow();
+    }
+
+    public void decreaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
+
+    public void increaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
+
+
+    /**
+     * Размножение растений
+     * Растение с небольшим весом дает такое же потомство, но есть шанс роста
+     * Есть шанс заселения соседних ячеек если в них не осталось растений
+     */
+    //TODO refactor, too long method
+    public void grow() {
+        if (Generator.getRandom(0, 3) == 0) {   //TODO вынести в настройки
+            getCurrentCell().getLock().lock();
+            try {
+                int toSpawn = getMaxPerCell() - getCurrentCell().getPlantsInCell().get(getAvatar()).size();
+                if (toSpawn > 0) {
+                    for (Plant plantPrototype : getPlantPrototypes()) {
+                        if (plantPrototype.getAvatar().equals(getAvatar())) {
+                            if (toSpawn == 1) {
+                                getCurrentCell().getPlantsInCell().get(getAvatar()).add(clone(getCurrentCell()));
+                            } else {
+                                toSpawn = Generator.getRandom(0, toSpawn);
+                                for (int i = 0; i < toSpawn; i++) {
+                                    getCurrentCell().getPlantsInCell().get(getAvatar()).add(clone(getCurrentCell()));
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (Generator.getRandom(0, 5) == 0) {
+                    for (Cell neighbour : getCurrentCell().getNeighbours()) {
+                        if (neighbour.getPlantsInCell().get(getAvatar()).size() == 0) {
+                            neighbour.getPlantsInCell().get(getAvatar()).add(clone(neighbour));
+                        }
+                    }
+                    if (getWeight() < getMaxWeight()) {
+                        increaseWeight((getMaxWeight() - getWeight()) / 5);
+                    }
+                }
+            } finally {
+                getCurrentCell().getLock().unlock();
+            }
+        }
+    }
+
+    public void dead() {
+        getCurrentCell().getLock().lock();
+        try {
+            getCurrentCell().getPlantsInCell().get(getAvatar()).remove(this);
+            setAlive(false);
+        } finally {
+            getCurrentCell().getLock().unlock();
+        }
+    }
+
+    public Plant clone(Cell cell) {
+        try {
+            Plant result = (Plant) super.clone();
+            result.name = result.name + " " + plantCount.incrementAndGet();
+            result.setCurrentCell(cell);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
 
     public String getName() {
         return name;
@@ -71,125 +149,6 @@ public abstract class Plant implements Organism, Cloneable {
         this.currentCell = currentCell;
     }
 
-
-    public void decreaseWeight(double weight) {
-        this.weight = this.weight - weight;
-    }
-    public void increaseWeight(double weight) {
-        this.weight = this.weight - weight;
-    }
-
-
-    @Override
-    public void startLife() {
-        grow();
-    }
-
-    // TODO задать шанс роста для каждого типа
-
-    /**
-     * Размножение растений
-     * Растение с небольшим весом дает такое же потомство, но есть шанс роста
-     * Есть шанс заселения соседних ячеек если в них не осталось растений
-     */
-    public void grow() {
-        if (Generator.getRandom(0, 3) == 0) {
-            getCurrentCell().getLock().lock();
-            try {
-                int toSpawn = getMaxPerCell() - getCurrentCell().plantsInCell.get(getAvatar()).size();
-                if (toSpawn > 0) {
-                    for (Plant plantPrototype : plantPrototypes) {
-                        if (plantPrototype.getAvatar().equals(getAvatar())) {
-                            if (toSpawn == 1) {
-                                getCurrentCell().plantsInCell.get(getAvatar()).add(clone(getCurrentCell()));
-                            } else {
-                                toSpawn = Generator.getRandom(0, toSpawn);
-                                for (int i = 0; i < toSpawn; i++) {
-                                    getCurrentCell().plantsInCell.get(getAvatar()).add(clone(getCurrentCell()));
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-                if (Generator.getRandom(0, 5) == 0) {
-                    for (Cell neighbour : getCurrentCell().getNeighbours()) {
-                        if (neighbour.plantsInCell.get(getAvatar()).size() == 0) {
-                            neighbour.plantsInCell.get(getAvatar()).add(clone(neighbour));
-                        }
-                    }
-                    if(getWeight() < getMaxWeight()) {
-                        increaseWeight((getMaxWeight() - getWeight())/5);
-                    }
-                }
-            } finally {
-                getCurrentCell().getLock().unlock();
-            }
-
-
-        }
-
-//        } finally {
-//            getCurrentCell().getLock().unlock();
-//        }
-    }
-
-
-//    public void spawn() {
-
-//        for (Plant plantPrototype : plantPrototypes) {
-//            if (Generator.getRandom(0,5) == 0) {
-//                int toSpawn = plantPrototype.getMaxPerCell() - plantsInCell.get(plantPrototype.getAvatar()).size();
-//                if (toSpawn > 1) {
-//                    toSpawn = Generator.getRandom(0, toSpawn);
-//                    for (int i = 0; i < toSpawn; i++) {
-//                        plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
-//                    }
-//                } else if (toSpawn == 1) plantsInCell.get(plantPrototype.getAvatar()).add(plantPrototype.clone(this));
-//            }
-//        }
-
-//        if (Generator.getRandom(0, 2) == 0) {
-//            int maxSpawn = maxPerCell - getCurrentCell().plantsInCell.get(getAvatar()).size();
-//            if (maxSpawn > 1) {
-//                int toSpawn = Generator.getRandom(0, maxSpawn);
-//                for (Plant plantPrototype : plantPrototypes) {
-//                    if(plantPrototype.avatar.equals(getAvatar())) {
-//                        for (int i = 0; i < toSpawn; i++) {
-//                            getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
-//                        }
-//                    }
-//                }
-//            } else if (maxSpawn == 1) {
-//                for (Plant plantPrototype : plantPrototypes) {
-//                    if(plantPrototype.avatar.equals(getAvatar())) {
-//                        getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-    public void dead() {
-        getCurrentCell().getLock().lock();
-        try {
-        getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
-        setAlive(false);
-        } finally {
-            getCurrentCell().getLock().unlock();
-        }
-    }
-
-    public Plant clone(Cell cell) {
-        try {
-            Plant result = (Plant) super.clone();
-            result.name = result.name + " " + plantCount.incrementAndGet();
-            result.setCurrentCell(cell);
-            return result;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
 
     @Override
     public boolean equals(Object o) {

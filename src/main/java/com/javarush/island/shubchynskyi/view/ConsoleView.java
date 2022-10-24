@@ -4,11 +4,11 @@ import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
-import com.javarush.island.shubchynskyi.settings.EntitySettings;
-
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.javarush.island.shubchynskyi.settings.Prototypes.*;
 
 public class ConsoleView implements View {
 
@@ -48,6 +48,7 @@ public class ConsoleView implements View {
         // TODO logic проверка на оставшихся животных, если умерли все, или если остались только мыши и гусеницы
     }
 
+    //TODO при нуле выделить красным или удалить, так же можно если все красные, то GameOver
     public String getStatistic() {
         StringBuilder result = new StringBuilder();
 
@@ -59,13 +60,13 @@ public class ConsoleView implements View {
 
         for (Cell[] cells : gameField.getGameField()) {
             for (Cell cell : cells) {
-                for (var var : cell.animalsInCell.entrySet()) {
+                for (var var : cell.getAnimalsInCell().entrySet()) {
                     type = var.getKey(); // получил ключ
                     newValue = var.getValue().size(); // размер сета по ключу map
                     oldValue = statisticMap.get(type);
                     statisticMap.put(type, oldValue + newValue);
                 }
-                for (var var : cell.plantsInCell.entrySet()) {
+                for (var var : cell.getPlantsInCell().entrySet()) {
                     type = var.getKey(); // получил ключ
                     newValue = var.getValue().size(); // размер сета по ключу map
                     oldValue = statisticMap.get(type);
@@ -83,10 +84,10 @@ public class ConsoleView implements View {
 
     // clear maps
     private void statisticMapInit() {
-        for (Animal prototype : EntitySettings.animalPrototypes) {
+        for (Animal prototype : getAnimalPrototypes()) {
             statisticMap.put(prototype.getAvatar(), 0);
         }
-        for (Plant prototype : EntitySettings.plantPrototypes) {
+        for (Plant prototype : getPlantPrototypes()) {
             statisticMap.put(prototype.getAvatar(), 0);
         }
     }

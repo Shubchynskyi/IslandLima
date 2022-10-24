@@ -1,9 +1,7 @@
 package com.javarush.island.shubchynskyi.services;
 
-import com.javarush.island.shubchynskyi.entity.animals.Organism;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 import com.javarush.island.shubchynskyi.exception.IslandException;
-import com.javarush.island.shubchynskyi.settings.GameSettings;
 import com.javarush.island.shubchynskyi.view.View;
 
 import java.util.ArrayList;
@@ -13,14 +11,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.plantPrototypes;
+import static com.javarush.island.shubchynskyi.settings.GameSettings.UPDATE_PERIOD;
+import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
+import static com.javarush.island.shubchynskyi.settings.Prototypes.getPlantPrototypes;
 
 public class GameWorker implements Runnable {
 
     private final GameField gameField;
     private final View viewer;
-    private final int UPDATE_PERIOD = GameSettings.UPDATE_PERIOD;
     private final int PROCESSORS_COUNT = Runtime.getRuntime().availableProcessors();
 
     public GameWorker(GameField gameField, View viewer) {
@@ -28,18 +26,20 @@ public class GameWorker implements Runnable {
         this.viewer = viewer;
     }
 
+    //TODO need refactor, too long method
     @Override
     public void run() {
         viewer.showMap();
         viewer.showStatistic();
 
         ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(PROCESSORS_COUNT);
+
         List<OrganismWorker> organismWorkers = new ArrayList<>();
 
-        organismWorkers.addAll(animalPrototypes.stream()
+        organismWorkers.addAll(getAnimalPrototypes().stream()
                 .map(o -> new OrganismWorker(gameField, o))
                 .toList());
-        organismWorkers.addAll(plantPrototypes.stream()
+        organismWorkers.addAll(getPlantPrototypes().stream()
                 .map(o -> new OrganismWorker(gameField, o))
                 .toList());
 
