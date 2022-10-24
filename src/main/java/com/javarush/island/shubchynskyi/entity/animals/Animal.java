@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
@@ -53,13 +54,43 @@ public abstract class Animal implements Organism, Cloneable {
         spawn();
     }
 
+    private void takeLocks(Lock lock1, Lock lock2) {
+        boolean firstLockTaken = false;
+        boolean secondLockTaken = false;
+
+        while (true) {
+
+            try {
+                firstLockTaken = lock1.tryLock();
+                secondLockTaken = lock2.tryLock();
+            } finally {
+                if (firstLockTaken && secondLockTaken) {
+                    return;
+                }
+
+                if (firstLockTaken) {
+                    lock1.unlock();
+                }
+
+                if (secondLockTaken) {
+                    lock2.unlock();
+                }
+            }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 
-
+    }
 
 
     // TODO убрать лишнее
     public void move() {
+
 
         int stepCount = Generator.getRandom(0, getSpeed() + 1);
         if (stepCount == 0) return;
@@ -67,17 +98,23 @@ public abstract class Animal implements Organism, Cloneable {
         for (int i = 0; i < stepCount; i++) {
             //беру рандомную соседскую доступную ячейку
             int count = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
-//            System.out.println("Хочу шагать в ячейку " + getCurrentCell().getNeighbours().get(count).toString());
+            //            System.out.println("Хочу шагать в ячейку " + getCurrentCell().getNeighbours().get(count).toString());
 
             // проверка на максимум животных
             int maxAnimalInCell = getCurrentCell().getNeighbours().get(count).animalsInCell.get(getAvatar()).size();
-//            System.out.printf("В целевой ячейке %d животных. Доступный максимум - %d%n", maxAnimalInCell, getMaxPerCell());
+            //            System.out.printf("В целевой ячейке %d животных. Доступный максимум - %d%n", maxAnimalInCell, getMaxPerCell());
 
             if (getMaxPerCell() > maxAnimalInCell) {
                 // новая ячейка стала текущей, если позволяет место
-                getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
-                setCurrentCell(getCurrentCell().getNeighbours().get(count));
-                getCurrentCell().animalsInCell.get(getAvatar()).add(this);
+//                takeLocks(getCurrentCell().getLock(), getCurrentCell().getNeighbours().get(count).getLock());
+//                try {
+                    getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
+                    setCurrentCell(getCurrentCell().getNeighbours().get(count));
+                    getCurrentCell().animalsInCell.get(getAvatar()).add(this);
+//                } finally {
+//                    getCurrentCell().getLock().unlock();
+//                    getCurrentCell().getNeighbours().get(count).getLock().unlock();
+//                }
 
             }
             //если места нет, ход пропущен
@@ -87,6 +124,7 @@ public abstract class Animal implements Organism, Cloneable {
 
     // TODO задать шансы и количество детенышей в зависимости от типа
     public void spawn() {
+
         // генерируем число - шанс 10% что пойдем дальше
         if (getWeight() > getCriticalWeight() + getMaxFood() * 0.5) {
             getCurrentCell().getLock().lock();
@@ -111,7 +149,6 @@ public abstract class Animal implements Organism, Cloneable {
             }
         }
     }
-
 
 
     public void eat() {
@@ -208,8 +245,8 @@ public abstract class Animal implements Organism, Cloneable {
         // TODO тут возникают дед локи
 //        getCurrentCell().getLock().lock();
 //        try {
-            getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
-            setAlive(false);
+        getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
+        setAlive(false);
 //        } finally {
 //            getCurrentCell().getLock().unlock();
 //        }
