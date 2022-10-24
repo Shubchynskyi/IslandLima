@@ -89,20 +89,25 @@ public abstract class Animal implements Organism, Cloneable {
     public void spawn() {
         // генерируем число - шанс 10% что пойдем дальше
         if (getWeight() > getCriticalWeight() + getMaxFood() * 0.5) {
-            int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
-            if (spawnChance == 0) {
-                int maxBaby = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
-                if (maxBaby > 2) maxBaby = 2;   // TODO максимум детенышей, вынести в настройки
-                if (maxBaby != 0) {
-                    maxBaby = Generator.getRandom(1, maxBaby + 1);
-                    for (Animal animalPrototype : animalPrototypes) {
-                        if (animalPrototype.getAvatar().equals(getAvatar())) {
-                            for (int i = 0; i < maxBaby; i++) {
-                                getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+            getCurrentCell().getLock().lock();
+            try {
+                int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
+                if (spawnChance == 0) {
+                    int maxBaby = getMaxPerCell() - getCurrentCell().animalsInCell.get(getAvatar()).size();
+                    if (maxBaby > 2) maxBaby = 2;   // TODO максимум детенышей, вынести в настройки
+                    if (maxBaby != 0) {
+                        maxBaby = Generator.getRandom(1, maxBaby + 1);
+                        for (Animal animalPrototype : animalPrototypes) {
+                            if (animalPrototype.getAvatar().equals(getAvatar())) {
+                                for (int i = 0; i < maxBaby; i++) {
+                                    getCurrentCell().animalsInCell.get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
+                                }
                             }
                         }
                     }
                 }
+            } finally {
+                getCurrentCell().getLock().unlock();
             }
         }
     }
@@ -199,8 +204,15 @@ public abstract class Animal implements Organism, Cloneable {
     }
 
     public void dead() {
-        getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
-        setAlive(false);
+
+        // TODO тут возникают дед локи
+//        getCurrentCell().getLock().lock();
+//        try {
+            getCurrentCell().animalsInCell.get(getAvatar()).remove(this);
+            setAlive(false);
+//        } finally {
+//            getCurrentCell().getLock().unlock();
+//        }
     }
 
     public Animal clone(Cell cell) {

@@ -22,6 +22,11 @@ public abstract class Plant implements Organism, Cloneable {
     private final int maxPerCell;
     private final String avatar;
 
+    public double getMaxWeight() {
+        return maxWeight;
+    }
+
+    private final double maxWeight;
     private boolean isAlive = true;
     private Cell currentCell;
 
@@ -31,23 +36,29 @@ public abstract class Plant implements Organism, Cloneable {
         this.weight = (double) FieldCreator.getField(this, WEIGHT);
         this.maxPerCell = (int) FieldCreator.getField(this, MAX_PER_CELL);
         this.avatar = (String) FieldCreator.getField(this, AVATAR);
+        maxWeight = weight;
     }
 
     public String getName() {
         return name;
     }
+
     public Cell getCurrentCell() {
         return currentCell;
     }
+
     public double getWeight() {
         return weight;
     }
+
     public int getMaxPerCell() {
         return maxPerCell;
     }
+
     public String getAvatar() {
         return avatar;
     }
+
     public boolean isAlive() {
         return isAlive;
     }
@@ -55,12 +66,16 @@ public abstract class Plant implements Organism, Cloneable {
     public void setAlive(boolean alive) {
         isAlive = alive;
     }
+
     public void setCurrentCell(Cell currentCell) {
         this.currentCell = currentCell;
     }
 
 
     public void decreaseWeight(double weight) {
+        this.weight = this.weight - weight;
+    }
+    public void increaseWeight(double weight) {
         this.weight = this.weight - weight;
     }
 
@@ -71,30 +86,44 @@ public abstract class Plant implements Organism, Cloneable {
     }
 
     // TODO задать шанс роста для каждого типа
+
+    /**
+     * Размножение растений
+     * Растение с небольшим весом дает такое же потомство, но есть шанс роста
+     * Есть шанс заселения соседних ячеек если в них не осталось растений
+     */
     public void grow() {
-//            getCurrentCell().getLock().lock();
-
-        if (Generator.getRandom(0,2) == 0) {
-            int toSpawn = getMaxPerCell() - getCurrentCell().plantsInCell.get(getAvatar()).size();
-            if (toSpawn > 0) {
-                for (Plant plantPrototype : plantPrototypes) {
-                    if (plantPrototype.getAvatar().equals(getAvatar())) {
-
-                        if(toSpawn == 1) {
-                            getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
-                        } else {
-                            toSpawn = Generator.getRandom(0, toSpawn);
-                            for (int i = 0; i < toSpawn; i++) {
-                                getCurrentCell().plantsInCell.get(getAvatar()).add(plantPrototype.clone(getCurrentCell()));
+        if (Generator.getRandom(0, 3) == 0) {
+            getCurrentCell().getLock().lock();
+            try {
+                int toSpawn = getMaxPerCell() - getCurrentCell().plantsInCell.get(getAvatar()).size();
+                if (toSpawn > 0) {
+                    for (Plant plantPrototype : plantPrototypes) {
+                        if (plantPrototype.getAvatar().equals(getAvatar())) {
+                            if (toSpawn == 1) {
+                                getCurrentCell().plantsInCell.get(getAvatar()).add(clone(getCurrentCell()));
+                            } else {
+                                toSpawn = Generator.getRandom(0, toSpawn);
+                                for (int i = 0; i < toSpawn; i++) {
+                                    getCurrentCell().plantsInCell.get(getAvatar()).add(clone(getCurrentCell()));
+                                }
                             }
+                            break;
                         }
                     }
                 }
-            }
-            for (Cell neighbour : getCurrentCell().getNeighbours()) {
-                if (neighbour.plantsInCell.get(getAvatar()).size() == 0) {
-                    neighbour.plantsInCell.get(getAvatar()).add(clone(neighbour));
+                if (Generator.getRandom(0, 5) == 0) {
+                    for (Cell neighbour : getCurrentCell().getNeighbours()) {
+                        if (neighbour.plantsInCell.get(getAvatar()).size() == 0) {
+                            neighbour.plantsInCell.get(getAvatar()).add(clone(neighbour));
+                        }
+                    }
+                    if(getWeight() < getMaxWeight()) {
+                        increaseWeight((getMaxWeight() - getWeight())/5);
+                    }
                 }
+            } finally {
+                getCurrentCell().getLock().unlock();
             }
 
 
@@ -142,13 +171,13 @@ public abstract class Plant implements Organism, Cloneable {
 //    }
 
     public void dead() {
-//        getCurrentCell().getLock().lock();
-//        try {
-            getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
-            setAlive(false);
-//        } finally {
-//            getCurrentCell().getLock().unlock();
-//        }
+        getCurrentCell().getLock().lock();
+        try {
+        getCurrentCell().plantsInCell.get(getAvatar()).remove(this);
+        setAlive(false);
+        } finally {
+            getCurrentCell().getLock().unlock();
+        }
     }
 
     public Plant clone(Cell cell) {

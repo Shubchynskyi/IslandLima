@@ -14,9 +14,9 @@ public class OrganismTask {
     }
 
     public void startTask(){
-//        if (organism.isAlive()) {
+        if (organism.isAlive()) {
             organism.startLife();
-//        }
+        }
 //        else {
 //            System.err.println("Мертво!");
 //        }
