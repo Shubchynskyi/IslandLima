@@ -1,14 +1,8 @@
 package com.javarush.island.shubchynskyi.entity.gamefield;
 
-import com.javarush.island.shubchynskyi.entity.animals.Animal;
-import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.settings.GameSettings;
-import com.javarush.island.shubchynskyi.utils.Generator;
 
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getPlantPrototypes;
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getFilledCell;
 
 public class GameField {
 
@@ -46,27 +40,5 @@ public class GameField {
                 if ((x - 1) >= 0) gameField[x][y].addNeighbour(gameField[x - 1][y]);
             }
         }
-    }
-//TODO вынести в фабрику? Заменить класс прототип на фабрика
-    private Cell getFilledCell(int x, int y) {
-        Cell resultCell = new Cell(x, y);
-
-        for (Animal prototype : getAnimalPrototypes()) {
-            resultCell.getAnimalsInCell().put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
-            int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
-            for (int i = 0; i <= randomInt; i++) {
-                resultCell.getAnimalsInCell().get(prototype.getAvatar()).add(prototype.clone(resultCell));
-            }
-        }
-
-        for (Plant prototype : getPlantPrototypes()) {
-            resultCell.getPlantsInCell().put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
-            int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
-            for (int i = 0; i <= randomInt; i++) {
-                resultCell.getPlantsInCell().get(prototype.getAvatar()).add(prototype.clone(resultCell));
-            }
-        }
-
-        return resultCell;
     }
 }

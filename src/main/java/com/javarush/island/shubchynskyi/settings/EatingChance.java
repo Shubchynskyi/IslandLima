@@ -6,7 +6,7 @@ import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
 
 public class EatingChance {
     private EatingChance() {

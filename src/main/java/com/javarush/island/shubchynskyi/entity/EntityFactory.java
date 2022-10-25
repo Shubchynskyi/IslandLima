@@ -1,17 +1,21 @@
-package com.javarush.island.shubchynskyi.settings;
+package com.javarush.island.shubchynskyi.entity;
 
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
+import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
 import com.javarush.island.shubchynskyi.exception.IslandException;
+import com.javarush.island.shubchynskyi.settings.EatingChance;
+import com.javarush.island.shubchynskyi.utils.Generator;
 
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.*;
 
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-public class Prototypes {
-    private Prototypes() {}
+public class EntityFactory {
+    private EntityFactory() {}
 
     private static final Set<Animal> animalPrototypes = new HashSet<>();
     private static final Set<Plant> plantPrototypes = new HashSet<>();
@@ -55,4 +59,35 @@ public class Prototypes {
             }
         }
     }
+
+    public static Cell getFilledCell(int x, int y) {
+        Cell resultCell = new Cell(x, y);
+
+        for (Animal prototype : getAnimalPrototypes()) {
+            randomAnimalFill(resultCell, prototype);
+        }
+
+        for (Plant prototype : getPlantPrototypes()) {
+            randomPlantFill(resultCell, prototype);
+        }
+
+        return resultCell;
+    }
+
+    private static void randomAnimalFill(Cell resultCell, Animal prototype) {
+        resultCell.getAnimalsInCell().put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
+        int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
+        for (int i = 0; i <= randomInt; i++) {
+            resultCell.getAnimalsInCell().get(prototype.getAvatar()).add(prototype.clone(resultCell));
+        }
+    }
+
+    private static void randomPlantFill(Cell resultCell, Plant prototype) {
+        resultCell.getPlantsInCell().put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
+        int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
+        for (int i = 0; i <= randomInt; i++) {
+            resultCell.getPlantsInCell().get(prototype.getAvatar()).add(prototype.clone(resultCell));
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.javarush.island.shubchynskyi.services;
 
+import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.animals.Organism;
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
@@ -20,37 +21,41 @@ public class OrganismWorker implements Runnable {
 
     @Override
     public void run() {
-
         for (Cell[] cells : gameField.getGameField()) {
             for (Cell cell : cells) {
                 cell.getLock().lock();
-
-                // TODO need refactor, remove one if-else after Organism refactoring
                 try {
-                    if(cell.getAnimalsInCell().get(organism.getAvatar()) != null){
-                        if (cell.getAnimalsInCell().get(organism.getAvatar()).size() > 0) {
-                            cell.getAnimalsInCell()
-                                    .get(organism.getAvatar())
-                                    .forEach(o -> organismTasks.add(new OrganismTask(o)));
-                        }
-                    } else
-
-                    if (cell.getPlantsInCell().get(organism.getAvatar()).size() > 0) {
-
-                        cell.getPlantsInCell()
-                                .get(organism.getAvatar())
-                                .forEach(o -> organismTasks.add(new OrganismTask(o)));
-                    }
+                    if (organism instanceof Animal) {
+                        fillQueueWithAnimals(cell);
+                    } else fillQueueWithPlants(cell);
                 } finally {
                     cell.getLock().unlock();
                 }
             }
         }
-        //запускаем и отчищаем очередь
+        runAndClear();
+    }
+
+    private void fillQueueWithPlants(Cell cell) {
+        if (cell.getPlantsInCell().get(organism.getAvatar()).size() > 0) {
+            cell.getPlantsInCell()
+                    .get(organism.getAvatar())
+                    .forEach(o -> organismTasks.add(new OrganismTask(o)));
+        }
+    }
+
+    private void fillQueueWithAnimals(Cell cell) {
+        if (cell.getAnimalsInCell().get(organism.getAvatar()).size() > 0) {
+            cell.getAnimalsInCell()
+                    .get(organism.getAvatar())
+                    .forEach(o -> organismTasks.add(new OrganismTask(o)));
+        }
+    }
+
+    private void runAndClear() {
         for (OrganismTask organismTask : organismTasks) {
             organismTask.startTask();
         }
         organismTasks.clear();
-
     }
 }

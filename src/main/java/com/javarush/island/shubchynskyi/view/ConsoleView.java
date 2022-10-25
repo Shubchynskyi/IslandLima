@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.javarush.island.shubchynskyi.settings.Prototypes.*;
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.*;
 
 public class ConsoleView implements View {
 

@@ -11,9 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getPlantPrototypes;
 import static com.javarush.island.shubchynskyi.settings.GameSettings.UPDATE_PERIOD;
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getPlantPrototypes;
 
 public class GameWorker implements Runnable {
 
@@ -26,7 +26,6 @@ public class GameWorker implements Runnable {
         this.viewer = viewer;
     }
 
-    //TODO need refactor, too long method
     @Override
     public void run() {
         viewer.showMap();
@@ -43,19 +42,21 @@ public class GameWorker implements Runnable {
                 .map(o -> new OrganismWorker(gameField, o))
                 .toList());
 
-        threadPool.scheduleWithFixedDelay(() -> {
-                    ExecutorService executorService = Executors.newFixedThreadPool(PROCESSORS_COUNT);
-                    organismWorkers.forEach(executorService::submit);
-                    executorService.shutdown();
-                    try {
-                        if (executorService.awaitTermination(1, TimeUnit.MINUTES)) {
-//                            viewer.showMap();
-                            viewer.showStatistic();
-                        }
-                    } catch (InterruptedException e) {
-                        throw new IslandException(e);
-                    }
-                }
-                , UPDATE_PERIOD, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
+        threadPool.scheduleWithFixedDelay(() -> runWorkers(organismWorkers),
+                UPDATE_PERIOD, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
+    }
+
+    private void runWorkers(List<OrganismWorker> organismWorkers) {
+        ExecutorService executorService = Executors.newFixedThreadPool(PROCESSORS_COUNT);
+        organismWorkers.forEach(executorService::submit);
+        executorService.shutdown();
+        try {
+            if (executorService.awaitTermination(1, TimeUnit.MINUTES)) {
+                viewer.showMap();
+                viewer.showStatistic();
+            }
+        } catch (InterruptedException e) {
+            throw new IslandException(e);
+        }
     }
 }

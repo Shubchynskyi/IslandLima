@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getAnimalPrototypes;
+import static com.javarush.island.shubchynskyi.settings.GameSettings.*;
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
 
 public abstract class Animal implements Organism, Cloneable {
 
@@ -61,14 +62,14 @@ public abstract class Animal implements Organism, Cloneable {
     }
 
     public void weightLoss() {
-        double weight = getMaxFood() / 10;      //10%  //TODO вынести в настройки
-        decreaseWeight(weight);
+        double weightToLoss = getMaxFood() * (ANIMAL_PERCENT_WEIGHT_LOSS / 100d);
+        decreaseWeight(weightToLoss);
         if (getWeight() <= getCriticalWeight()) {
-            dead();
+            die();
         }
     }
 
-    public void dead() {
+    public void die() {
         getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
         setAlive(false);
     }
@@ -90,22 +91,21 @@ public abstract class Animal implements Organism, Cloneable {
         weightLoss();
     }
 
-    // TODO задать шансы и количество детенышей в зависимости от типа
     public void spawn() {
         getCurrentCell().getLock().lock();
         try {
-            if (getWeight() > getCriticalWeight() + getMaxFood() * 0.5) { //TODO вынести в настройки
-                int spawnChance = Generator.getRandom(0, 20); // TODO шанс рождения, определить для каждого класса?
-                if (spawnChance == 0) {
+            double weightForSpawnTry = getCriticalWeight() + getMaxFood() * (ANIMAL_PERCENT_SATIETY_TO_SPAWN / 100d);
+            if (getWeight() > weightForSpawnTry) {
+                if (Generator.checkChance(ANIMAL_PERCENT_SPAWN_CHANCE)) {
                     int maxBaby = getMaxPerCell() - getCurrentCell().getAnimalsInCell().get(getAvatar()).size();
-                    if (maxBaby > 2) maxBaby = 2;   // TODO максимум детенышей, вынести в настройки
+                    if (maxBaby > ANIMAL_BABY_MAX_COUNT) maxBaby = ANIMAL_BABY_MAX_COUNT;
                     if (maxBaby != 0) {
                         maxBaby = Generator.getRandom(1, maxBaby + 1);
                         for (Animal animalPrototype : getAnimalPrototypes()) {
                             if (animalPrototype.getAvatar().equals(getAvatar())) {
                                 for (int i = 0; i < maxBaby; i++) {
                                     getCurrentCell().getAnimalsInCell().get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
-                                }
+                                } break;
                             }
                         }
                     }
@@ -116,13 +116,16 @@ public abstract class Animal implements Organism, Cloneable {
         }
     }
 
-
     public void eat() {
         if (getWeight() < getMaxWeight()) {
+
             if (this instanceof Omnivore) {
                 if (Generator.getRandom(0, 2) == 1) {
-                    tryToEatAnimal();
+                    if(!tryToEatAnimal()){
+                        tryToEatPlant();
+                    }
                 } else tryToEatPlant();
+
             } else if (this instanceof Predator) {
                 tryToEatAnimal();
             } else {
@@ -147,7 +150,7 @@ public abstract class Animal implements Organism, Cloneable {
         }
     }
 
-    private void tryToEatAnimal() {
+    private boolean tryToEatAnimal() {
         Set<Map.Entry<String, Set<Animal>>> entries =
                 getCurrentCell().getAnimalsInCell().entrySet().stream()
                         .filter(o -> o.getValue().size() > 0)
@@ -161,13 +164,15 @@ public abstract class Animal implements Organism, Cloneable {
                     .getValue().stream()
                     .findAny()
                     .ifPresent(this::eat);
+            return true;
         }
+        return false;
     }
 
     private void eat(Animal animal) {
         int percent = getChancesToEat().get(animal.getAvatar());
         if (Generator.checkChance(percent)) {
-            animal.dead();
+            animal.die();
             double maxTakeFood = getMaxWeight() - getWeight();
             if (maxTakeFood > animal.getWeight()) {
                 maxTakeFood = animal.getWeight();
@@ -185,7 +190,7 @@ public abstract class Animal implements Organism, Cloneable {
         plant.decreaseWeight(maxTakeFood);
 
         if (plant.getWeight() <= 0) {
-            plant.dead();
+            plant.die();
         }
     }
 

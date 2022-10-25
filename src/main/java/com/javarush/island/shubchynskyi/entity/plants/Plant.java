@@ -9,8 +9,10 @@ import com.javarush.island.shubchynskyi.utils.Generator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getPlantPrototypes;
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
-import static com.javarush.island.shubchynskyi.settings.Prototypes.getPlantPrototypes;
+import static com.javarush.island.shubchynskyi.settings.GameSettings.PLANT_GROW_AND_SPREADING_CHANCE;
+import static com.javarush.island.shubchynskyi.settings.GameSettings.PLANT_PERCENT_SPAWN_CHANCE;
 
 public abstract class Plant implements Organism, Cloneable {
 
@@ -41,7 +43,7 @@ public abstract class Plant implements Organism, Cloneable {
 
     @Override
     public void startLife() {
-        grow();
+        spawn();
     }
 
     public void decreaseWeight(double weight) {
@@ -52,50 +54,47 @@ public abstract class Plant implements Organism, Cloneable {
         this.weight = this.weight - weight;
     }
 
-
     /**
-     * Размножение растений
-     * Растение с небольшим весом дает такое же потомство, но есть шанс роста
-     * Есть шанс заселения соседних ячеек если в них не осталось растений
+     * A plant with a low weight produces offspring with the same weight.
+     * There is a chance of plant growth and a chance of spreading to neighboring empty cells.
      */
-    //TODO refactor, too long method
-    public void grow() {
-        if (Generator.getRandom(0, 3) == 0) {   //TODO вынести в настройки
-            getCurrentCell().getLock().lock();
-            try {
+    public void spawn() {
+        getCurrentCell().getLock().lock();
+        try {
+            if (Generator.checkChance(PLANT_PERCENT_SPAWN_CHANCE)) {
                 int toSpawn = getMaxPerCell() - getCurrentCell().getPlantsInCell().get(getAvatar()).size();
                 if (toSpawn > 0) {
                     for (Plant plantPrototype : getPlantPrototypes()) {
                         if (plantPrototype.getAvatar().equals(getAvatar())) {
-                            if (toSpawn == 1) {
+                            toSpawn = Generator.getRandom(0, toSpawn);
+                            for (int i = 0; i < toSpawn; i++) {
                                 getCurrentCell().getPlantsInCell().get(getAvatar()).add(clone(getCurrentCell()));
-                            } else {
-                                toSpawn = Generator.getRandom(0, toSpawn);
-                                for (int i = 0; i < toSpawn; i++) {
-                                    getCurrentCell().getPlantsInCell().get(getAvatar()).add(clone(getCurrentCell()));
-                                }
                             }
                             break;
                         }
                     }
                 }
-                if (Generator.getRandom(0, 5) == 0) {
-                    for (Cell neighbour : getCurrentCell().getNeighbours()) {
-                        if (neighbour.getPlantsInCell().get(getAvatar()).size() == 0) {
-                            neighbour.getPlantsInCell().get(getAvatar()).add(clone(neighbour));
-                        }
-                    }
-                    if (getWeight() < getMaxWeight()) {
-                        increaseWeight((getMaxWeight() - getWeight()) / 5);
-                    }
-                }
-            } finally {
-                getCurrentCell().getLock().unlock();
             }
+            if (Generator.checkChance(PLANT_GROW_AND_SPREADING_CHANCE)) {
+                growAndSpreading();
+            }
+        } finally {
+            getCurrentCell().getLock().unlock();
         }
     }
 
-    public void dead() {
+    private void growAndSpreading() {
+        for (Cell neighbour : getCurrentCell().getNeighbours()) {
+            if (neighbour.getPlantsInCell().get(getAvatar()).size() == 0) {
+                neighbour.getPlantsInCell().get(getAvatar()).add(clone(neighbour));
+            }
+        }
+        if (getWeight() < getMaxWeight()) {
+            increaseWeight((getMaxWeight() - getWeight()) / 5);
+        }
+    }
+
+    public void die() {
         getCurrentCell().getLock().lock();
         try {
             getCurrentCell().getPlantsInCell().get(getAvatar()).remove(this);
