@@ -66,7 +66,7 @@ public abstract class Plant implements Organism, Cloneable {
                 if (toSpawn > 0) {
                     for (Plant plantPrototype : getPlantPrototypes()) {
                         if (plantPrototype.getAvatar().equals(getAvatar())) {
-                            toSpawn = Generator.getRandom(0, toSpawn);
+                            toSpawn = Generator.getRandomForSpawn(0, toSpawn);
                             for (int i = 0; i < toSpawn; i++) {
                                 getCurrentCell().getPlantsInCell().get(getAvatar()).add(clone(getCurrentCell()));
                             }

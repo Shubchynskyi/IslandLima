@@ -76,16 +76,16 @@ public class EntityFactory {
 
     private static void randomAnimalFill(Cell resultCell, Animal prototype) {
         resultCell.getAnimalsInCell().put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
-        int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
-        for (int i = 0; i <= randomInt; i++) {
+        int randomInt = Generator.getRandomForSpawn(0, prototype.getMaxPerCell());
+        for (int i = 0; i < randomInt; i++) {
             resultCell.getAnimalsInCell().get(prototype.getAvatar()).add(prototype.clone(resultCell));
         }
     }
 
     private static void randomPlantFill(Cell resultCell, Plant prototype) {
         resultCell.getPlantsInCell().put(prototype.getAvatar(), new CopyOnWriteArraySet<>());
-        int randomInt = Generator.getRandom(0, prototype.getMaxPerCell());
-        for (int i = 0; i <= randomInt; i++) {
+        int randomInt = Generator.getRandomForSpawn(0, prototype.getMaxPerCell());
+        for (int i = 0; i < randomInt; i++) {
             resultCell.getPlantsInCell().get(prototype.getAvatar()).add(prototype.clone(resultCell));
         }
     }

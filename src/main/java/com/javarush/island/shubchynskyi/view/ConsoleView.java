@@ -5,7 +5,6 @@ import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.gamefield.GameField;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
 
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,14 +14,14 @@ import static com.javarush.island.shubchynskyi.entity.EntityFactory.getPlantProt
 import static com.javarush.island.shubchynskyi.settings.Constants.GAME_OVER_MESSAGE;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.caterpillarAvatar;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.mouseAvatar;
-import static com.javarush.island.shubchynskyi.settings.GameSettings.GAME_STOP_CONDITIONS;
+import static com.javarush.island.shubchynskyi.settings.GameSettings.*;
 import static com.javarush.island.shubchynskyi.view.Colors.*;
 
 public class ConsoleView implements View {
 
     private final GameField gameField;
     private final Map<String, Integer> statisticMap = new HashMap<>();
-
+    private int updateCount = 0;
     private boolean isGameStop = false;
 
     public ConsoleView(GameField gameField) {
@@ -80,7 +79,6 @@ public class ConsoleView implements View {
 
     @Override
     public void showStatistic() {
-        System.out.println(LocalTime.now()); // for test only
         System.out.println(getStatistic());
     }
 
@@ -95,10 +93,15 @@ public class ConsoleView implements View {
         statisticMapInitAndClear();
         collectStatistic();
 
+        result.append(getDays());
         result.append(COLOR_GREEN);
+
+        int currentView = 0;
+        int maxViewInString = 9;
         for (var var : statisticMap.entrySet()) {
             if (var.getValue() > 0) {
-                result.append(var.getKey()).append(" = ").append(var.getValue()).append("; ");
+                result.append(var.getKey()).append(" = ").append(var.getValue() * CHEAT_LEVEL).append("; ");
+                if (++currentView == maxViewInString) result.append("\n");
                 if (!Arrays.asList(GAME_STOP_CONDITIONS).contains(var.getKey())) {
                     isGameStop = false;
                 }
@@ -108,6 +111,10 @@ public class ConsoleView implements View {
 
         setGameStop(isGameStop);
         return result.toString();
+    }
+
+    private String getDays() {
+        return COLOR_BLUE + "Day " + ++updateCount + " of " + MAX_TICKS + "\n";
     }
 
     private void collectStatistic() {

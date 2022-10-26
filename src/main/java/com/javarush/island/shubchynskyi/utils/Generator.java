@@ -7,10 +7,13 @@ public class Generator {
     }
 
     public static int getRandom(int min, int max) {
-        if (min == 0 && max == 1) {
-            return 1;
-        }
         return ThreadLocalRandom.current().nextInt(min, max);
+    }
+
+    public static int getRandomForSpawn(int min, int max) {
+        if (min == 0 && max == 1) {
+            return getRandom(min, (max + 1));
+        } else return ThreadLocalRandom.current().nextInt(min, max);
     }
 
     public static boolean checkChance(int percent) {

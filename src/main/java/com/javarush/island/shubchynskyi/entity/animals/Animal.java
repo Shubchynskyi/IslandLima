@@ -154,7 +154,7 @@ public abstract class Animal implements Organism, Cloneable {
                     int maxBaby = getMaxPerCell() - getCurrentCell().getAnimalsInCell().get(getAvatar()).size();
                     if (maxBaby > ANIMAL_BABY_MAX_COUNT) maxBaby = ANIMAL_BABY_MAX_COUNT;
                     if (maxBaby != 0) {
-                        maxBaby = Generator.getRandom(1, maxBaby + 1);
+                        maxBaby = Generator.getRandomForSpawn(0, maxBaby + 1);
                         for (Animal animalPrototype : getAnimalPrototypes()) {
                             if (animalPrototype.getAvatar().equals(getAvatar())) {
                                 for (int i = 0; i < maxBaby; i++) {

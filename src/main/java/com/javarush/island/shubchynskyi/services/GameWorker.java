@@ -63,8 +63,6 @@ public class GameWorker implements Runnable {
         executorService.shutdown();
         try {
             if (executorService.awaitTermination(1, TimeUnit.MINUTES)) {
-
-                System.out.println(days);
                 viewer.showMap();
                 viewer.showStatistic();
                 if ((days.get() == MAX_TICKS) || viewer.isGameStop()) {

@@ -23,7 +23,7 @@ public class Caterpillar extends Animal implements Herbivore {
             maxToSpawn = freeSlot;
         }
         if (maxToSpawn > 0) {
-            int toSpawn = Generator.getRandom(0, maxToSpawn);
+            int toSpawn = Generator.getRandomForSpawn(0, maxToSpawn);
             for (Animal animalPrototype : getAnimalPrototypes()) {
                 if (animalPrototype.getAvatar().equals(getAvatar())) {
                     for (int i = 0; i < toSpawn; i++) {
