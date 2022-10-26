@@ -10,9 +10,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
 import static com.javarush.island.shubchynskyi.entity.EntityFactory.getPlantPrototypes;
+import static com.javarush.island.shubchynskyi.settings.GameSettings.MAX_TICKS;
 import static com.javarush.island.shubchynskyi.settings.GameSettings.UPDATE_PERIOD;
 
 public class GameWorker implements Runnable {
@@ -20,6 +22,8 @@ public class GameWorker implements Runnable {
     private final GameField gameField;
     private final View viewer;
     private final int PROCESSORS_COUNT = Runtime.getRuntime().availableProcessors();
+    private final AtomicInteger days = new AtomicInteger(1);
+    private boolean gameStop = false;
 
     public GameWorker(GameField gameField, View viewer) {
         this.gameField = gameField;
@@ -42,7 +46,14 @@ public class GameWorker implements Runnable {
                 .map(o -> new OrganismWorker(gameField, o))
                 .toList());
 
-        threadPool.scheduleWithFixedDelay(() -> runWorkers(organismWorkers),
+        threadPool.scheduleWithFixedDelay(() -> {
+                    if (gameStop){
+                        threadPool.shutdown();
+                    } else {
+                        days.incrementAndGet();
+                        runWorkers(organismWorkers);
+                    }
+                } ,
                 UPDATE_PERIOD, UPDATE_PERIOD, TimeUnit.MILLISECONDS);
     }
 
@@ -52,8 +63,14 @@ public class GameWorker implements Runnable {
         executorService.shutdown();
         try {
             if (executorService.awaitTermination(1, TimeUnit.MINUTES)) {
+
+                System.out.println(days);
                 viewer.showMap();
                 viewer.showStatistic();
+                if ((days.get() == MAX_TICKS) || viewer.isGameStop()) {
+                    gameStop = true;
+                    viewer.getGameStopMessage();
+                }
             }
         } catch (InterruptedException e) {
             throw new IslandException(e);

@@ -48,9 +48,12 @@ public abstract class Animal implements Organism, Cloneable {
 
     @Override
     public void startLife() {
-        move();
         eat();
-        spawn();
+        if(getWeight() == getMaxWeight()) {
+            spawn();
+        }
+        move();
+
     }
 
     public void increaseWeight(double weight) {
