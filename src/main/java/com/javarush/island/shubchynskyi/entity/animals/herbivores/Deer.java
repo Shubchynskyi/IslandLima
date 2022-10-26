@@ -5,6 +5,4 @@ import com.javarush.island.shubchynskyi.entity.animals.Herbivore;
 
 public class Deer extends Animal implements Herbivore {
 
-
-
 }

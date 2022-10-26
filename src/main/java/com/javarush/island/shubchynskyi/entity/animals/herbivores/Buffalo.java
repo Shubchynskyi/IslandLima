@@ -5,6 +5,4 @@ import com.javarush.island.shubchynskyi.entity.animals.Herbivore;
 
 public class Buffalo extends Animal implements Herbivore {
 
-
-
 }

@@ -5,6 +5,4 @@ import com.javarush.island.shubchynskyi.entity.animals.Predator;
 
 public class Eagle extends Animal implements Predator {
 
-
-
 }

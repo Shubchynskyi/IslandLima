@@ -4,28 +4,26 @@ import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.animalPrototypes;
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
 
 public class EatingChance {
     private EatingChance() {
     }
 
-    private static final int size = EntitySettings.animalPrototypes.size();
+    private static final int size = getAnimalPrototypes().size();
     private static final int[][] eatingChance = new int[size][size];
 
     public static int[][] getEatingChance() {
         return eatingChance;
     }
 
-    public static Map<String, Integer> fillAnimalToEat(Animal animal) {
+    public static Map<String, Integer> fillAnimalChanceToEat(Animal animal) {
         Map<String, Integer> result = new HashMap<>();
-        int thisId = animal.getType().ordinal();                   // получил свой id
+        int thisId = animal.getType().ordinal();
 
-        for (Animal animalPrototype : animalPrototypes) {
+        for (Animal animalPrototype : getAnimalPrototypes()) {
             int targetId = animalPrototype.getType().ordinal();
             int eatChance = getEatingChance()[thisId][targetId];
             if (eatChance != 0) {
@@ -36,9 +34,9 @@ public class EatingChance {
     }
 
 
-
     static {
-        /* Herbivores */
+
+        //************************** Omnivores **************************//
         eatingChance[EntityEnums.DUCK.ordinal()][EntityEnums.CATERPILLAR.ordinal()] = 90;
 
         eatingChance[EntityEnums.BOAR.ordinal()][EntityEnums.MOUSE.ordinal()] = 50;
@@ -46,7 +44,8 @@ public class EatingChance {
 
         eatingChance[EntityEnums.MOUSE.ordinal()][EntityEnums.CATERPILLAR.ordinal()] = 90;
 
-        /* Predators */
+
+        //************************** Predators **************************//
         eatingChance[EntityEnums.EAGLE.ordinal()][EntityEnums.FOX.ordinal()] = 10;
         eatingChance[EntityEnums.EAGLE.ordinal()][EntityEnums.RABBIT.ordinal()] = 90;
         eatingChance[EntityEnums.EAGLE.ordinal()][EntityEnums.MOUSE.ordinal()] = 90;

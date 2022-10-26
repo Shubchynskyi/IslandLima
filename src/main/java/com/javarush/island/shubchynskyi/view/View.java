@@ -6,5 +6,8 @@ public interface View {
 
     void showStatistic();
 
-    void gameOver();
+    boolean isGameStop();
+
+    void getGameStopMessage();
+
 }
