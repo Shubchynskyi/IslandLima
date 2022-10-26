@@ -2,6 +2,7 @@ package com.javarush.island.shubchynskyi.entity.animals;
 
 import com.javarush.island.shubchynskyi.entity.gamefield.Cell;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
+import com.javarush.island.shubchynskyi.exception.IslandException;
 import com.javarush.island.shubchynskyi.utils.FieldCreator;
 import com.javarush.island.shubchynskyi.utils.Generator;
 
@@ -9,12 +10,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
+import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
 import static com.javarush.island.shubchynskyi.settings.Constants.*;
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.EntityEnums;
 import static com.javarush.island.shubchynskyi.settings.GameSettings.*;
-import static com.javarush.island.shubchynskyi.entity.EntityFactory.getAnimalPrototypes;
 
 public abstract class Animal implements Organism, Cloneable {
 
@@ -48,12 +50,9 @@ public abstract class Animal implements Organism, Cloneable {
 
     @Override
     public void startLife() {
+        spawn();
         eat();
-        if(getWeight() == getMaxWeight()) {
-            spawn();
-        }
         move();
-
     }
 
     public void increaseWeight(double weight) {
@@ -66,15 +65,27 @@ public abstract class Animal implements Organism, Cloneable {
 
     public void weightLoss() {
         double weightToLoss = getMaxFood() * (ANIMAL_PERCENT_WEIGHT_LOSS / 100d);
-        decreaseWeight(weightToLoss);
-        if (getWeight() <= getCriticalWeight()) {
-            die();
+        getCurrentCell().getLock().lock();
+        try {
+            decreaseWeight(weightToLoss);
+
+            if (getWeight() <= getCriticalWeight()) {
+                die(getCurrentCell());
+            }
+        } finally {
+            getCurrentCell().getLock().unlock();
         }
     }
 
-    public void die() {
-        getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
-        setAlive(false);
+    public void die(Cell cell) {
+        cell.getLock().lock();
+        try {
+            getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
+            setAlive(false);
+        } finally {
+            cell.getLock().unlock();
+        }
+
     }
 
     public void move() {
@@ -83,15 +94,55 @@ public abstract class Animal implements Organism, Cloneable {
 
         for (int i = 0; i < stepCount; i++) {
             int randomNeighbourCell = Generator.getRandom(0, getCurrentCell().getNeighbours().size());
-            int animalInTargetCell = getCurrentCell().getNeighbours().get(randomNeighbourCell).getAnimalsInCell().get(getAvatar()).size();
 
-            if (getMaxPerCell() > animalInTargetCell) {
-                getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
-                setCurrentCell(getCurrentCell().getNeighbours().get(randomNeighbourCell));
-                getCurrentCell().getAnimalsInCell().get(getAvatar()).add(this);
+            Cell startCell = getCurrentCell();
+            Cell targetCell = getCurrentCell().getNeighbours().get(randomNeighbourCell);
+            Lock startLock = startCell.getLock();
+            Lock finishLock = targetCell.getLock();
+
+            takeLocks(startLock, finishLock);
+            try {
+                int animalInTargetCell = getCurrentCell().getNeighbours().get(randomNeighbourCell)
+                        .getAnimalsInCell().get(getAvatar()).size();
+
+                if (getMaxPerCell() > animalInTargetCell) {
+                    getCurrentCell().getAnimalsInCell().get(getAvatar()).remove(this);
+                    setCurrentCell(getCurrentCell().getNeighbours().get(randomNeighbourCell));
+                    getCurrentCell().getAnimalsInCell().get(getAvatar()).add(this);
+                }
+            } finally {
+                startLock.unlock();
+                finishLock.unlock();
             }
         }
         weightLoss();
+    }
+
+    @SuppressWarnings("all")
+    private void takeLocks(Lock start, Lock target) {
+        boolean startLockTaken = false;
+        boolean targetLockTaken = false;
+        while (true) {
+            try {
+                startLockTaken = start.tryLock();
+                targetLockTaken = target.tryLock();
+            } finally {
+                if (startLockTaken && targetLockTaken) {
+                    return;
+                }
+                if (startLockTaken) {
+                    start.unlock();
+                }
+                if (targetLockTaken) {
+                    target.unlock();
+                }
+            }
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new IslandException(e);
+            }
+        }
     }
 
     public void spawn() {
@@ -108,7 +159,8 @@ public abstract class Animal implements Organism, Cloneable {
                             if (animalPrototype.getAvatar().equals(getAvatar())) {
                                 for (int i = 0; i < maxBaby; i++) {
                                     getCurrentCell().getAnimalsInCell().get(getAvatar()).add(animalPrototype.clone(getCurrentCell()));
-                                } break;
+                                }
+                                break;
                             }
                         }
                     }
@@ -120,20 +172,25 @@ public abstract class Animal implements Organism, Cloneable {
     }
 
     public void eat() {
-        if (getWeight() < getMaxWeight()) {
+        getCurrentCell().getLock().lock();
+        try {
+            if (getWeight() < getMaxWeight()) {
 
-            if (this instanceof Omnivore) {
-                if (Generator.getRandom(0, 2) == 1) {
-                    if(!tryToEatAnimal()){
-                        tryToEatPlant();
-                    }
-                } else tryToEatPlant();
+                if (this instanceof Omnivore) {
+                    if (Generator.getRandom(0, 2) == 1) {
+                        if (!tryToEatAnimal()) {
+                            tryToEatPlant();
+                        }
+                    } else tryToEatPlant();
 
-            } else if (this instanceof Predator) {
-                tryToEatAnimal();
-            } else {
-                tryToEatPlant();
+                } else if (this instanceof Predator) {
+                    tryToEatAnimal();
+                } else {
+                    tryToEatPlant();
+                }
             }
+        } finally {
+            getCurrentCell().getLock().unlock();
         }
     }
 
@@ -175,13 +232,15 @@ public abstract class Animal implements Organism, Cloneable {
     private void eat(Animal animal) {
         int percent = getChancesToEat().get(animal.getAvatar());
         if (Generator.checkChance(percent)) {
-            animal.die();
+
             double maxTakeFood = getMaxWeight() - getWeight();
             if (maxTakeFood > animal.getWeight()) {
                 maxTakeFood = animal.getWeight();
             }
             increaseWeight(maxTakeFood);
+
         }
+        animal.die(animal.getCurrentCell());
     }
 
     private void eat(Plant plant) {
@@ -193,7 +252,7 @@ public abstract class Animal implements Organism, Cloneable {
         plant.decreaseWeight(maxTakeFood);
 
         if (plant.getWeight() <= 0) {
-            plant.die();
+            plant.die(getCurrentCell());
         }
     }
 

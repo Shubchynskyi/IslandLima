@@ -3,11 +3,7 @@ package com.javarush.island.shubchynskyi.entity.gamefield;
 import com.javarush.island.shubchynskyi.entity.animals.Animal;
 import com.javarush.island.shubchynskyi.entity.plants.Plant;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,8 +18,8 @@ public class Cell {
 
     private final Lock lock = new ReentrantLock(true);
     private final List<Cell> neighbours = new ArrayList<>();
-    private final Map<String, Set<Animal>> animalsInCell = new ConcurrentHashMap<>();
-    private final Map<String, Set<Plant>> plantsInCell = new ConcurrentHashMap<>();
+    private final Map<String, Set<Animal>> animalsInCell = new HashMap<>();
+    private final Map<String, Set<Plant>> plantsInCell = new HashMap<>();
 
     public Map<String, Set<Animal>> getAnimalsInCell() {
         return animalsInCell;

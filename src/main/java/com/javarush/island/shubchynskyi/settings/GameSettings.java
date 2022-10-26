@@ -1,7 +1,6 @@
 package com.javarush.island.shubchynskyi.settings;
 
 import static com.javarush.island.shubchynskyi.settings.EntitySettings.*;
-import static com.javarush.island.shubchynskyi.settings.EntitySettings.caterpillarAvatar;
 
 public class GameSettings {
     private GameSettings() {

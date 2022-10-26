@@ -1,21 +1,26 @@
 package com.javarush.island.shubchynskyi.settings;
 
-/** ВЫНЕСТИ В README
- * Contract for new entity:
+/**
+ *      Contract for new entity
  *
- * 1. Mandatory variables for animals:
- *          The beginning of the variable name must begin with the name of the animal class
+ *  Mandatory variables for entity:
+ *          1. The beginning of the variable name must begin with the name of the entity class
+ *          2. Entity avatar - must have a unique value
  *
- *       public static final EntityEnums wolfType = EntityEnums.WOLF;
- *       public static final double wolfWeight = 50;
- *       public static final int wolfMaxPerCell = 6; //30 //6
- *       public static final int wolfSpeed = 3;
- *       public static final double wolfMaxFood = 8;
- *       public final static String wolfAvatar
+ *  Animal example:
+ *      public static final EntityEnums wolfType = EntityEnums.WOLF;
+ *      public static final double wolfWeight = 50;
+ *      public static final int wolfMaxPerCell = 30;
+ *      public static final int wolfSpeed = 3;
+ *      public static final double wolfMaxFood = 8;
+ *      public static final String wolfAvatar = "\uD83D\uDC3A"
  *
- *       Avatar - обязательно уникальный, используется в сетах прототипов
- *
- *
+ *  Plant example:
+ *      public static final String treeName = "Tree";
+ *      public static final EntityEnums treeType = EntityEnums.TREE;
+ *      public static final double treeWeight = 20; //20
+ *      public static final int treeMaxPerCell = 10; //50 //10
+ *      public static final String treeAvatar = "\ud83c\udf32";
  */
 
 public class EntitySettings {

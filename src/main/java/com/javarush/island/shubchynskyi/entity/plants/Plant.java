@@ -94,13 +94,13 @@ public abstract class Plant implements Organism, Cloneable {
         }
     }
 
-    public void die() {
-        getCurrentCell().getLock().lock();
+    public void die(Cell cell) {
+        cell.getLock().lock();
         try {
             getCurrentCell().getPlantsInCell().get(getAvatar()).remove(this);
             setAlive(false);
         } finally {
-            getCurrentCell().getLock().unlock();
+            cell.getLock().unlock();
         }
     }
 
