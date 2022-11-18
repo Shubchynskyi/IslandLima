@@ -6,13 +6,13 @@ public class GameSettings {
     private GameSettings() {
     }
 
-    public static final int GAME_FIELD_WIDTH = 100;
-    public static final int GAME_FIELD_HEIGHT = 20;
+    public static final int GAME_FIELD_WIDTH = 10;
+    public static final int GAME_FIELD_HEIGHT = 5;
 
     public static final int UPDATE_PERIOD = 1000;
     public static final int MAX_TICKS = 150;
 
-    public static final int CHEAT_LEVEL = 5; // Decreases the number of objects
+    public static final int CHEAT_LEVEL = 1; // Decreases the number of objects
 
     public static final int ANIMAL_PERCENT_SATIETY_TO_SPAWN = 65;
     public static final int ANIMAL_PERCENT_SPAWN_CHANCE = 5;
